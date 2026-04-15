@@ -48,4 +48,11 @@
 - [x] ICP备案号 footer 展示
 
 ## 部署
-- [ ] 代码推送到 GitHub 并触发自动部署
+- [x] 创建GitHub两个版本分支（v1.0-complete 和 v2.0-yinyuan）
+- [x] 隐藏八字排盘和塔罗占卜功能
+- [x] 主推姻缘测算功能
+- [ ] 配置Node.js部署脚本
+- [ ] 配置SSL证书
+- [ ] 部署到阿里云服务器（47.95.118.78）
+- [ ] 配置www.zhengyuanzhiyin.com域名DNS
+- [ ] 验证部署并测试功能

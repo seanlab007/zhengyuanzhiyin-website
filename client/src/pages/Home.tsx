@@ -20,8 +20,9 @@ export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
 
+  // 主推姻缘测算和每日运势
   const featuredProducts = PRODUCTS.filter(p =>
-    ["bazi", "marriage", "tarot", "daily"].includes(p.key)
+    ["marriage", "daily"].includes(p.key)
   );
 
   return (
@@ -90,7 +91,7 @@ export default function Home() {
               custom={2}
               className="text-white/75 text-sm leading-relaxed max-w-[280px] mx-auto mb-6"
             >
-              融合八字、紫微、塔罗等多元命理体系，为您量身定制人生指引
+              专业姻缘配对分析，助您寻觅真爱良缘
             </motion.p>
 
             <motion.div variants={fadeUp} custom={3}>
