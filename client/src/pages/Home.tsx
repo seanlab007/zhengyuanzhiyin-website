@@ -257,7 +257,7 @@ export default function Home() {
       {/* ICP Footer */}
       <footer className="text-center pb-24 px-4">
         <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
-          淮安观正文化传媒有限公司 |{" "}
+          徐苏兰 |{" "}
           <a
             href="https://beian.miit.gov.cn/"
             target="_blank"
