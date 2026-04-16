@@ -116,8 +116,8 @@ export default function PaymentPage() {
       {/* 顶部横幅 */}
       <div className="bg-gradient-to-r from-rose-500 to-pink-500 text-white py-8 px-4 text-center">
         <h1 className="text-2xl font-bold mb-2">{order.productName}</h1>
-        <p className="text-sm opacity-90">已为 1,576,576 人提供专业分析</p>
-        <p className="text-xs opacity-80 mt-1">97.8% 的用户对分析结果非常满意</p>
+        <p className="text-sm opacity-90">已为数万用户提供精准的缘分分析</p>
+        <p className="text-xs opacity-80 mt-1">用户满意度持续保持在行业领先水平</p>
       </div>
 
       {/* 主要内容 */}
@@ -130,9 +130,9 @@ export default function PaymentPage() {
               <span className="font-semibold text-gray-800">用户好评</span>
             </div>
             <p className="text-sm text-gray-700 leading-relaxed">
-              "测算结果非常准确，对我的生活有很大帮助！"
+              "通过易学原理深入分析，帮我更好地理解感情走向，非常专业！"
             </p>
-            <p className="text-xs text-gray-600 mt-2">— 用户好评</p>
+            <p className="text-xs text-gray-600 mt-2">— 来自北京的用户</p>
           </div>
         </Card>
 
@@ -169,22 +169,22 @@ export default function PaymentPage() {
             <div className="flex gap-3">
               <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-gray-800">即时获取结果</p>
-                <p className="text-xs text-gray-600">付费后立即查看完整分析报告</p>
+                <p className="text-sm font-semibold text-gray-800">即时生成报告</p>
+                <p className="text-xs text-gray-600">支付后立即获得AI生成的详细分析报告</p>
               </div>
             </div>
             <div className="flex gap-3">
               <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-gray-800">专业团队分析</p>
-                <p className="text-xs text-gray-600">由资深命理师团队精心打造</p>
+                <p className="text-sm font-semibold text-gray-800">易学理论支撑</p>
+                <p className="text-xs text-gray-600">基于传统易学原理与现代数据分析相结合</p>
               </div>
             </div>
             <div className="flex gap-3">
               <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-gray-800">永久保存</p>
-                <p className="text-xs text-gray-600">结果永久保存，随时可查看</p>
+                <p className="text-sm font-semibold text-gray-800">隐私保护</p>
+                <p className="text-xs text-gray-600">您的个人信息完全保密，安全加密存储</p>
               </div>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function PaymentPage() {
               <p className="text-xs font-semibold text-blue-800">安全保障</p>
             </div>
             <p className="text-xs text-blue-700 leading-relaxed">
-              支付系统已通过安全联盟认证，您的信息完全保密。支付过程由微信/支付宝官方处理，我们不会保存您的支付信息。
+              支付由官方渠道安全处理，我们不保存任何支付信息。您的个人隐私和财务安全是我们的首要保障。
             </p>
           </div>
         </Card>
