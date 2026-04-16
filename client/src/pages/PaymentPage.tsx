@@ -207,24 +207,24 @@ export default function PaymentPage() {
       <div className="max-w-md mx-auto px-4 space-y-4 mb-8">
         {/* 模块1: 个人性格对感情的影响 */}
         <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
-          <h3 className="text-center text-base font-bold text-red-900 mb-3">解析个人性格对感情的影响</h3>
+          <h3 className="text-center text-base font-bold text-red-900 mb-3">个人性格对感情的影响</h3>
           <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 分析你潜在吸引异性的个人魅力</p>
-            <p className="text-gray-800">• 如何经营幸福稳定的婚姻生活？</p>
-            <p className="text-gray-800">• 分析哪些因素对你的感情不利</p>
+            <p className="text-gray-800">• 魅力分析</p>
+            <p className="text-gray-800">• 婚姻经营</p>
+            <p className="text-gray-800">• 感情困境分析</p>
           </div>
           <button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all">
             🔓 立即解锁
           </button>
         </div>
 
-        {/* 模块2: 探索婚姻成长方向 */}
+        {/* 模块2: 婚姻成长方向 */}
         <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
-          <h3 className="text-center text-base font-bold text-red-900 mb-3">探索婚姻成长方向</h3>
+          <h3 className="text-center text-base font-bold text-red-900 mb-3">婚姻成长方向</h3>
           <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 解析你的姻缘情况</p>
-            <p className="text-gray-800">• 了解你的择偶倾向与感情特质</p>
-            <p className="text-gray-800">• 专业点评适合你的婚配对象</p>
+            <p className="text-gray-800">• 姻缘情况</p>
+            <p className="text-gray-800">• 择偶倾向</p>
+            <p className="text-gray-800">• 婚配点评</p>
           </div>
           <button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all">
             🔓 立即解锁
@@ -235,9 +235,9 @@ export default function PaymentPage() {
         <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
           <h3 className="text-center text-base font-bold text-red-900 mb-3">你的婚姻格局</h3>
           <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 婚姻对象的条件和特征</p>
-            <p className="text-gray-800">• 婚后感情生活分析</p>
-            <p className="text-gray-800">• 根据伴侣性格和谐相处的技巧</p>
+            <p className="text-gray-800">• 对象条件</p>
+            <p className="text-gray-800">• 婚后生活</p>
+            <p className="text-gray-800">• 相处技巧</p>
           </div>
           <button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all">
             🔓 立即解锁
@@ -248,9 +248,9 @@ export default function PaymentPage() {
         <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
           <h3 className="text-center text-base font-bold text-red-900 mb-3">你最应了解的婚配要点</h3>
           <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 你适合早婚还是晚婚？</p>
-            <p className="text-gray-800">• 守护婚姻长期亲密的策略</p>
-            <p className="text-gray-800">• 老师专业点评适合你的婚配对象！</p>
+            <p className="text-gray-800">• 早婚晚婚</p>
+            <p className="text-gray-800">• 亲密策略</p>
+            <p className="text-gray-800">• 配对评估</p>
           </div>
           <button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all">
             🔓 立即解锁
@@ -261,10 +261,10 @@ export default function PaymentPage() {
         <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
           <h3 className="text-center text-base font-bold text-red-900 mb-3">2026年爱情幸福秘箱</h3>
           <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 我要拍拖</p>
-            <p className="text-gray-800">• 我要提升人缘</p>
-            <p className="text-gray-800">• 我要爱情更加甜蜜</p>
-            <p className="text-gray-800">• 防止爱人变心！</p>
+            <p className="text-gray-800">• 拍拖</p>
+            <p className="text-gray-800">• 人缘</p>
+            <p className="text-gray-800">• 甜蜜</p>
+            <p className="text-gray-800">• 防变心</p>
           </div>
           <button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all">
             🔓 立即解锁
