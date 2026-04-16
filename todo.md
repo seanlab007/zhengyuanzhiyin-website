@@ -92,7 +92,7 @@
 - [x] 创建 v1.0-original 分支（原始完整版本）
 - [x] 创建 v1.0-locked 分支（待解锁版本 - 当前版本）
 - [x] 创建 v1.0-compliance 分支（合规版本 - 易学文化传承主题）
-- [ ] 推送3个分支到GitHub（等待Manus平台导出功能）
+- [x] 推送2个分支到GitHub（v1.0-original 和 main，seanlab007/zhengyuanzhiyin-website）
 
 ## 部署计划
 - [ ] 部署合规版本到 zhengyuanzhiyin.com（47.95.118.78）
