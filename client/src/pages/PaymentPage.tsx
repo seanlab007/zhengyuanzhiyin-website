@@ -112,7 +112,7 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-white pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-white pb-24">
       {/* 顶部横幅 */}
       <div className="bg-gradient-to-r from-rose-500 to-pink-500 text-white py-8 px-4 text-center">
         <h1 className="text-2xl font-bold mb-2">{order.productName}</h1>
@@ -130,9 +130,9 @@ export default function PaymentPage() {
               <span className="font-semibold text-gray-800">用户好评</span>
             </div>
             <p className="text-sm text-gray-700 leading-relaxed">
-              "通过易学原理深入分析，帮我更好地理解感情走向，非常专业！"
+              "感情一直不顺利，通过测算找到了问题所在，现在和伴侣关系好多了！"
             </p>
-            <p className="text-xs text-gray-600 mt-2">— 来自北京的用户</p>
+            <p className="text-xs text-gray-600 mt-2">— 来自上海的用户</p>
           </div>
         </Card>
 
@@ -169,22 +169,22 @@ export default function PaymentPage() {
             <div className="flex gap-3">
               <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-gray-800">即时生成报告</p>
-                <p className="text-xs text-gray-600">支付后立即获得AI生成的详细分析报告</p>
+                <p className="text-sm font-semibold text-gray-800">深度分析感情问题</p>
+                <p className="text-xs text-gray-600">从八字命理角度分析您的感情困境和缘分走向</p>
               </div>
             </div>
             <div className="flex gap-3">
               <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-gray-800">易学理论支撑</p>
-                <p className="text-xs text-gray-600">基于传统易学原理与现代数据分析相结合</p>
+                <p className="text-sm font-semibold text-gray-800">一对一咨询指导</p>
+                <p className="text-xs text-gray-600">获得报告后可加微信与专业老师深入沟通</p>
               </div>
             </div>
             <div className="flex gap-3">
               <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-gray-800">隐私保护</p>
-                <p className="text-xs text-gray-600">您的个人信息完全保密，安全加密存储</p>
+                <p className="text-sm font-semibold text-gray-800">快速获得答案</p>
+                <p className="text-xs text-gray-600">支付后立即获得详细分析，不用等待</p>
               </div>
             </div>
           </div>
@@ -281,14 +281,14 @@ export default function PaymentPage() {
         </Card>
       </div>
 
-      {/* 底部客服 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 max-w-md mx-auto">
-        <p className="text-xs text-center text-gray-600">
-          遇到问题？
-          <button className="text-rose-500 font-semibold hover:underline ml-1">
-            联系客服
+      {/* 底部客服 - 强化微信转化 */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-rose-50 to-pink-50 border-t-2 border-rose-200 p-4 max-w-md mx-auto">
+        <div className="text-center">
+          <p className="text-xs text-gray-600 mb-2 font-semibold">获得报告后，加微信与老师一对一沟通</p>
+          <button className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-all transform hover:scale-105 active:scale-95">
+            ⭐ 添加微信咨询
           </button>
-        </p>
+        </div>
       </div>
     </div>
   );
