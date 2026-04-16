@@ -165,7 +165,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
             
             {/* 表单覆盖在图片中间 - 不覆盖头部 */}
-            <div className="absolute top-1/2 left-0 right-0 px-3 py-1 transform -translate-y-1/2">
+            <div className="absolute top-2/3 left-0 right-0 px-3 py-1 transform -translate-y-1/2">
               {/* 表单 */}
               <div ref={formRef} className="rounded-2xl overflow-hidden mb-2" style={{ background: 'linear-gradient(135deg, #fef9f0, #fdf3e7)', border: '2px solid #e8c99b' }}>
                 <div className="px-3 py-2 space-y-2">
