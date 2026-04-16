@@ -148,18 +148,28 @@ export default function Home() {
       {/* Floating buttons */}
       <FloatingButtons />
 
+      {/* 姓名测算入口 */}
+      <div className="px-4 py-2 max-w-md mx-auto">
+        <button
+          onClick={() => navigate('/name-test')}
+          className="w-full py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-sm hover:from-purple-600 hover:to-pink-600 transition-all"
+        >
+          姓名测算
+        </button>
+      </div>
+
       {/* Hero Section - 欢迎页面 */}
-      <div className="relative pt-8 pb-6 px-4">
+      <div className="relative pt-4 pb-6 px-4">
         <div className="max-w-md mx-auto text-center">
           <h1 className="text-white text-2xl font-bold mb-2">姻缘测试</h1>
           <p className="text-gray-400 text-sm mb-6">恋爱婚姻 · 爱情秘籍 · 婚姻分析</p>
           
-          {/* Hero Image */}
-          <div className="relative mb-4 rounded-3xl overflow-hidden border-4 border-yellow-400/50 shadow-2xl">
+          {/* Hero Image - 只显示上半部分 */}
+          <div className="relative mb-4 rounded-3xl overflow-hidden border-4 border-yellow-400/50 shadow-2xl h-32">
             <img 
               src={HERO_IMG} 
               alt="Marriage Test" 
-              className="w-full h-auto"
+              className="w-full h-full object-cover object-top"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
