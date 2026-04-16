@@ -18,10 +18,19 @@ export default function PaymentPage() {
   const [isCreatingPay, setIsCreatingPay] = useState(false);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Countdown timer for urgency
-  const [timeLeft, setTimeLeft] = useState(1800);
+  // Countdown timer for urgency (60 seconds = 1 minute)
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [timerExpired, setTimerExpired] = useState(false);
   useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(prev => (prev > 0 ? prev - 1 : 0)), 1000);
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          setTimerExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -205,16 +214,67 @@ export default function PaymentPage() {
         <div className="text-center space-y-2">
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-2">
-              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">限时优惠</span>
-              <span className="text-white text-2xl font-black">¥{order.amount}</span>
-              <span className="text-white text-2xl font-black">元</span>
+              {!timerExpired ? (
+                <>
+                  <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">限时特价</span>
+                  <span className="text-white text-2xl font-black">¥9.9</span>
+                  <span className="text-white text-2xl font-black">元</span>
+                </>
+              ) : (
+                <>
+                  <span className="bg-gray-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">原价</span>
+                  <span className="text-white text-2xl font-black">¥69.9</span>
+                  <span className="text-white text-2xl font-black">元</span>
+                </>
+              )}
             </div>
             <div className="text-right">
-              <p className="text-pink-300 text-xs">距优惠结束</p>
-              <p className="text-red-400 font-mono font-bold text-lg">{formatCountdown(timeLeft)}</p>
+              {!timerExpired ? (
+                <>
+                  <p className="text-pink-300 text-xs">距优惠结束</p>
+                  <p className="text-red-400 font-mono font-bold text-lg">{formatCountdown(timeLeft)}</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-gray-400 text-xs">优惠已结束</p>
+                  <p className="text-gray-400 font-mono font-bold text-lg">00:00</p>
+                </>
+              )}
             </div>
           </div>
-          <p className="text-gray-400 text-xs line-through">原价：¥99.00元</p>
+          {!timerExpired ? (
+            <p className="text-gray-400 text-xs line-through">原价：¥69.9元</p>
+          ) : (
+            <p className="text-gray-400 text-xs">重新登录可获得¥9.9元特价</p>
+          )}
+        </div>
+
+        <div className="border-t border-pink-800/30" />
+
+        {/* User Reviews */}
+        <div className="space-y-2">
+          {[
+            { name: "李小燕", time: "2天前", content: "测出我和老公的婚配指数真的很准！性格互补，现在更懂得如何经营感情了，强烈推荐！" },
+            { name: "张婷婷", time: "1周前", content: "农历生日测算超级准确，分析了感情不顺利的原因，客服建议非常专业，找到了方向。" },
+            { name: "王晓雨", time: "3天前", content: "个人性格分析太贴切了，2026年爱情幸福秘箱的内容很有指导意义，29.9元超值！" }
+          ].map((review, i) => (
+            <div key={i} className="rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="flex items-start gap-2">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center text-white font-bold text-xs shrink-0 text-[10px]">
+                  {review.name[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="font-semibold text-foreground text-xs text-white">{review.name}</p>
+                    <p className="text-xs text-pink-300/70">{review.time}</p>
+                  </div>
+                  <p className="text-xs text-pink-200/80 leading-tight line-clamp-2 mt-0.5">
+                    "{review.content}"
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="border-t border-pink-800/30" />
