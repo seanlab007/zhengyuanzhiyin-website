@@ -16,7 +16,7 @@ const HIDDEN_PRODUCTS: Product[] = [
 
 export const PRODUCTS: Product[] = [
   // 主推功能：姻缘测算
-  { key: "marriage", name: "姻缘测算", price: 29.9, icon: "💕", description: "姻缘配对深度分析，寻觅真爱良缘", isFree: false, isLocked: false },
+  { key: "marriage", name: "姻缘测算", price: 9.9, icon: "💕", description: "姻缘配对深度分析，寻觅真爱良缘", isFree: false, isLocked: false },
   // 免费功能
   { key: "daily", name: "每日运势", price: 0, icon: "✨", description: "每日运势贴心提醒，开启美好一天", isFree: true, isLocked: false },
   // 其他付费功能 - 暂时锁定，等待B端客户付费后开放

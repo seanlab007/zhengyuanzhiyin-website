@@ -5,11 +5,13 @@ import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import LunarDatePicker from '@/components/LunarDatePicker';
 import FloatingButtons from '@/components/FloatingButtons';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const HERO_IMG = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663494601131/cb6tJthVaUMYyF2mL5LVPm/marriage-hero-bg-9eGPiLxodHioWaYizX3qxd.webp';
 
 export default function Home() {
   const [, navigate] = useLocation();
+  const { isAdmin } = useAdmin();
 
   // Form state
   const [name, setName] = useState('');

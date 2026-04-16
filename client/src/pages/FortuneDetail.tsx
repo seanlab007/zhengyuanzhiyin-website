@@ -9,11 +9,13 @@ import { toast } from "sonner";
 import { ArrowLeft, Lock, Sparkles, MessageCircle } from "lucide-react";
 import { getLoginUrl } from "@/const";
 import { Streamdown } from "streamdown";
+import { useAdmin } from "@/contexts/AdminContext";
 
 export default function FortuneDetail() {
   const params = useParams<{ key: string }>();
   const [, navigate] = useLocation();
   const { user, isAuthenticated } = useAuth();
+  const { isAdmin } = useAdmin();
   const productKey = params.key || "";
   const product = useMemo(() => getProductByKey(productKey), [productKey]);
 
@@ -23,7 +25,7 @@ export default function FortuneDetail() {
 
   const accessQuery = trpc.orders.checkAccess.useQuery(
     { productKey },
-    { enabled: isAuthenticated && !!productKey }
+    { enabled: (isAuthenticated || isAdmin) && !!productKey }
   );
 
   const createOrderMutation = trpc.orders.create.useMutation({
@@ -63,7 +65,7 @@ export default function FortuneDetail() {
   }
 
   const handleSubmit = () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !isAdmin) {
       window.location.href = getLoginUrl();
       return;
     }

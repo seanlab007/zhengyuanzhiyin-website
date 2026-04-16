@@ -15,6 +15,7 @@ import OrderHistory from "./pages/OrderHistory";
 import Complaint from "./pages/Complaint";
 import OrderLookup from "./pages/OrderLookup";
 import ResultPage from "./pages/ResultPage";
+import AdminContext, { useAdmin } from "./contexts/AdminContext";
 
 function Router() {
   return (
@@ -39,12 +40,14 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
+      <AdminContext>
+        <ThemeProvider defaultTheme="dark">
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </ThemeProvider>
+      </AdminContext>
     </ErrorBoundary>
   );
 }
