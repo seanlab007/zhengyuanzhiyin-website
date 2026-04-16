@@ -55,26 +55,33 @@ function createUserContext(role: "user" | "admin" = "user"): TrpcContext {
 }
 
 describe("Products", () => {
-  it("has exactly 6 products", () => {
+  it("has exactly 6 visible products", () => {
     expect(PRODUCTS).toHaveLength(6);
   });
 
-  it("has correct pricing for all products", () => {
+  it("has correct pricing for visible products", () => {
     const expected: Record<string, number> = {
-      bazi: 19.9,
-      ziwei: 29.9,
       marriage: 29.9,
+      daily: 0,
+      ziwei: 29.9,
       wealth: 19.9,
       name: 9.9,
-      daily: 0,
       dayun: 39.9,
-      tarot: 9.9,
     };
     for (const [key, price] of Object.entries(expected)) {
       const product = getProductByKey(key);
       expect(product).toBeDefined();
       expect(product!.price).toBe(price);
     }
+  });
+
+  it("hidden products are still accessible via getProductByKey", () => {
+    const bazi = getProductByKey("bazi");
+    expect(bazi).toBeDefined();
+    expect(bazi!.price).toBe(19.9);
+    const tarot = getProductByKey("tarot");
+    expect(tarot).toBeDefined();
+    expect(tarot!.price).toBe(9.9);
   });
 
   it("marks daily fortune as free", () => {
@@ -96,7 +103,7 @@ describe("Products", () => {
 });
 
 describe("Products list API", () => {
-  it("returns all products via public procedure", async () => {
+  it("returns visible products via public procedure", async () => {
     const { ctx } = createPublicContext();
     const caller = appRouter.createCaller(ctx);
     const products = await caller.products.list();

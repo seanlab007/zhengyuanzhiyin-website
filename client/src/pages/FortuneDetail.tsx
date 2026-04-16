@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ArrowLeft, Lock, Sparkles, MessageCircle } from "lucide-react";
+import { getLoginUrl } from "@/const";
 import { Streamdown } from "streamdown";
 
 export default function FortuneDetail() {
@@ -32,7 +33,6 @@ export default function FortuneDetail() {
         generateMutation.mutate({
           orderId: data.orderId,
           productKey,
-          inputData: JSON.stringify(formData),
         });
       } else {
         // 使用新的支付页面
@@ -64,7 +64,7 @@ export default function FortuneDetail() {
 
   const handleSubmit = () => {
     if (!isAuthenticated) {
-      navigate("/login");
+      window.location.href = getLoginUrl();
       return;
     }
 

@@ -7,6 +7,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { handleWechatCallback } from "../payment/wechat";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -30,6 +31,27 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+
+  // WeChat payment callback - MUST be before json body parser to receive raw XML
+  app.post("/api/wechat/callback", express.text({ type: "*/*", limit: "1mb" }), async (req, res) => {
+    try {
+      console.log("[WechatCallback] Received callback");
+      const xmlData = typeof req.body === "string" ? req.body : String(req.body);
+      const result = await handleWechatCallback(xmlData);
+      if (result.success) {
+        res.set("Content-Type", "application/xml");
+        res.send("<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>");
+      } else {
+        res.set("Content-Type", "application/xml");
+        res.send(`<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[${result.message}]]></return_msg></xml>`);
+      }
+    } catch (error) {
+      console.error("[WechatCallback] Error:", error);
+      res.set("Content-Type", "application/xml");
+      res.send("<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[Internal Error]]></return_msg></xml>");
+    }
+  });
+
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
