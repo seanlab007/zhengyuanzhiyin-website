@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Link, useLocation } from "wouter";
 import { PRODUCTS } from "@shared/products";
-import { Sparkles, ChevronRight, Star, Moon, Heart } from "lucide-react";
+import { Sparkles, ChevronRight, Star, Moon, Heart, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 
 const HERO_BG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663494601131/cb6tJthVaUMYyF2mL5LVPm/hero-banner-n32V32NkERGTouP7NeQpNR.webp";
@@ -159,123 +159,76 @@ export default function Home() {
           {PRODUCTS.map((product, i) => (
             <motion.div
               key={product.key}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05, duration: 0.4, ease: "easeOut" as const }}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.05, duration: 0.4, ease: "easeOut" as const }}
             >
-              <Link href={`/fortune/${product.key}`}>
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-3.5 flex items-center gap-3.5 shadow-sm hover:shadow-md transition-all border border-white/60 hover:-translate-y-0.5">
-                  <div className="w-11 h-11 rounded-xl gradient-soft flex items-center justify-center text-xl shrink-0 shadow-sm">
+              {product.isLocked ? (
+                // 待解锁状态
+                <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-3.5 flex items-center gap-3.5 shadow-sm border border-white/40 opacity-75 cursor-not-allowed">
+                  <div className="w-11 h-11 rounded-xl bg-gray-200 flex items-center justify-center text-xl shrink-0 shadow-sm opacity-50">
                     {product.icon}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-foreground text-sm">
+                      <h4 className="font-semibold text-foreground text-sm opacity-60">
                         {product.name}
                       </h4>
-                      {product.isFree && (
-                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] rounded-full font-semibold border border-emerald-100">
-                          免费
-                        </span>
-                      )}
+                      <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-full font-semibold border border-gray-200 flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" />
+                        待解锁
+                      </span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1 opacity-60">
                       {product.description}
                     </p>
                   </div>
                   <div className="flex flex-col items-end shrink-0">
-                    {!product.isFree && (
-                      <span className="text-sm font-bold text-primary">
-                        ¥{product.price}
-                      </span>
-                    )}
-                    <ChevronRight className="w-4 h-4 text-muted-foreground/50 mt-0.5" />
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/30" />
                   </div>
                 </div>
-              </Link>
+              ) : (
+                // 可用状态
+                <Link href={`/fortune/${product.key}`}>
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-3.5 flex items-center gap-3.5 shadow-sm hover:shadow-md transition-all border border-white/60 hover:-translate-y-0.5">
+                    <div className="w-11 h-11 rounded-xl gradient-soft flex items-center justify-center text-xl shrink-0 shadow-sm">
+                      {product.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold text-foreground text-sm">
+                          {product.name}
+                        </h4>
+                        {product.isFree && (
+                          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] rounded-full font-semibold border border-emerald-100">
+                            免费
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                        {product.description}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end shrink-0">
+                      {!product.isFree && (
+                        <span className="text-sm font-bold text-primary">
+                          ¥{product.price}
+                        </span>
+                      )}
+                      <ChevronRight className="w-4 h-4 text-muted-foreground/50 mt-0.5" />
+                    </div>
+                  </div>
+                </Link>
+              )}
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Trust & Social Proof */}
-      <section className="px-4 py-6">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-white/60 shadow-sm">
-          <div className="flex items-center justify-around text-center">
-            <div>
-              <div className="flex items-center justify-center gap-0.5 text-amber-400 mb-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3 h-3 fill-current" />
-                ))}
-              </div>
-              <p className="text-[10px] text-muted-foreground font-medium">
-                专业团队
-              </p>
-            </div>
-            <div className="w-px h-10 bg-border/40" />
-            <div>
-              <p className="text-base font-bold text-foreground">10万+</p>
-              <p className="text-[10px] text-muted-foreground font-medium mt-0.5">
-                用户信赖
-              </p>
-            </div>
-            <div className="w-px h-10 bg-border/40" />
-            <div>
-              <p className="text-base font-bold text-foreground">99.8%</p>
-              <p className="text-[10px] text-muted-foreground font-medium mt-0.5">
-                好评率
-              </p>
-            </div>
-          </div>
-        </div>
+      {/* Footer */}
+      <section className="px-4 py-6 text-center text-xs text-muted-foreground/60 border-t border-border/50">
+        <p>苏州费汀娜教育科技有限公司 | 苏ICP备2021048491号-4</p>
       </section>
-
-      {/* Expert consultation CTA */}
-      <section className="px-4 pb-6">
-        <div className="gradient-primary rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/10 -translate-y-1/3 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-16 h-16 rounded-full bg-white/5 translate-y-1/3 -translate-x-1/3" />
-          <div className="relative z-10 flex items-center gap-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <Heart className="w-4 h-4 text-rose-200" />
-                <h4 className="font-serif font-bold text-base">专家一对一详批</h4>
-              </div>
-              <p className="text-white/75 text-xs leading-relaxed">
-                资深命理师为您深度解读，提供个性化人生建议
-              </p>
-            </div>
-            <button
-              onClick={() => navigate("/features")}
-              className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-xs font-semibold border border-white/30 whitespace-nowrap hover:bg-white/30 transition-colors"
-            >
-              立即咨询
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ICP Footer */}
-      <footer className="text-center pb-24 px-4">
-        <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
-          苏州费汀娜教育科技有限公司 |{" "}
-          <a
-            href="https://beian.miit.gov.cn/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-primary transition-colors"
-          >
-            苏ICP备2021048491号-4
-          </a>
-          {" "} |{" "}
-          <button
-            onClick={() => navigate("/complaint")}
-            className="underline hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0"
-          >
-            客服投诉
-          </button>
-        </p>
-      </footer>
     </div>
   );
 }
