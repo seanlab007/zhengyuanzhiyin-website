@@ -143,7 +143,77 @@ export default function FortuneDetail() {
         <div className="bg-card rounded-2xl p-5 shadow-md border border-border/30">
           <h3 className="font-semibold text-foreground mb-4">请填写信息</h3>
           <div className="space-y-3">
-            {fields.map(field => (
+            {/* 整合姓名、性别、生日到一个卡片 */}
+            {fields.some(f => ["name", "fullName", "gender", "birthDate"].includes(f.key)) && (
+              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-5 border border-primary/20">
+                <div className="space-y-4">
+                  {/* 姓名 */}
+                  {fields.find(f => ["name", "fullName"].includes(f.key)) && (
+                    <div>
+                      <label className="text-xs text-muted-foreground mb-2 block font-medium">
+                        {fields.find(f => ["name", "fullName"].includes(f.key))?.label}
+                        <span className="text-destructive ml-1">*</span>
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder={fields.find(f => ["name", "fullName"].includes(f.key))?.placeholder}
+                        value={formData[fields.find(f => ["name", "fullName"].includes(f.key))?.key || ""] || ""}
+                        onChange={e => setFormData(prev => ({ ...prev, [fields.find(f => ["name", "fullName"].includes(f.key))?.key || ""]: e.target.value }))}
+                        className="h-11 rounded-xl bg-white border-border/50 focus:border-primary"
+                      />
+                    </div>
+                  )}
+
+                  {/* 性别 */}
+                  {fields.find(f => f.key === "gender") && (
+                    <div>
+                      <label className="text-xs text-muted-foreground mb-2 block font-medium">
+                        {fields.find(f => f.key === "gender")?.label}
+                        <span className="text-destructive ml-1">*</span>
+                      </label>
+                      <div className="flex gap-3">
+                        {fields.find(f => f.key === "gender")?.options?.map(opt => (
+                          <label key={opt.value} className="flex items-center gap-2 cursor-pointer flex-1">
+                            <input
+                              type="radio"
+                              name="gender"
+                              value={opt.value}
+                              checked={formData.gender === opt.value}
+                              onChange={e => setFormData(prev => ({ ...prev, gender: e.target.value }))}
+                              className="w-4 h-4 accent-primary"
+                            />
+                            <span className="text-sm text-foreground">{opt.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 生日 */}
+                  {fields.find(f => f.key === "birthDate") && (
+                    <div>
+                      <label className="text-xs text-muted-foreground mb-2 block font-medium">
+                        {fields.find(f => f.key === "birthDate")?.label}
+                        <span className="text-destructive ml-1">*</span>
+                      </label>
+                      <Input
+                        type="date"
+                        value={formData.birthDate || ""}
+                        onChange={e => setFormData(prev => ({ ...prev, birthDate: e.target.value }))}
+                        className="h-11 rounded-xl bg-white border-border/50 focus:border-primary"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* 其他字段 */}
+            {fields.map(field => {
+              // 跳过已整合的字段
+              if (["name", "fullName", "gender", "birthDate"].includes(field.key)) return null;
+              
+              return (
               <div key={field.key}>
                 <label className="text-xs text-muted-foreground mb-1 block">
                   {field.label} {field.required && <span className="text-destructive">*</span>}
@@ -177,9 +247,9 @@ export default function FortuneDetail() {
                   />
                 )}
               </div>
-            ))}
+            );
+            })}
           </div>
-
           <Button
             onClick={handleSubmit}
             disabled={isLoading}

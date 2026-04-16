@@ -98,10 +98,14 @@ export default function Profile() {
 
       {/* ICP Footer */}
       <footer className="text-center mt-8 pb-20 px-4">
-        <p className="text-[10px] text-muted-foreground">
-          淮安观正文化传媒有限公司 |{" "}
-          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="underline">
-            苏ICP备2024112658号-1
+        <p className="text-[10px] text-muted-foreground leading-relaxed">
+          苏州费汀娜教育科技有限公司 |{" "}
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">
+            苏ICP备2021048491号-4
+          </a>
+          {" "} |{" "}
+          <a href="https://work.weixin.qq.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">
+            客服投诉
           </a>
         </p>
       </footer>
