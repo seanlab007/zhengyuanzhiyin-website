@@ -153,3 +153,41 @@ export async function updateOrderResult(orderId: number, resultData: string) {
   if (!db) throw new Error("Database not available");
   await db.update(orders).set({ resultData }).where(eq(orders.id, orderId));
 }
+
+// Kuaishou tracking operations
+export async function createKuaishouTracking(tracking: {
+  callback: string;
+  adid?: string;
+  params?: Record<string, any>;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { kuaishouTracking } = await import("../drizzle/schema");
+  const result = await db.insert(kuaishouTracking).values({
+    callback: tracking.callback,
+    adid: tracking.adid,
+    params: tracking.params ? JSON.stringify(tracking.params) : null,
+    status: "pending",
+  });
+  return Number(result[0].insertId);
+}
+
+export async function getKuaishouTrackingByCallback(callback: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const { kuaishouTracking } = await import("../drizzle/schema");
+  const result = await db.select().from(kuaishouTracking).where(eq(kuaishouTracking.callback, callback)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updateKuaishouTrackingStatus(trackingId: number, status: "pending" | "converted" | "failed", orderId?: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const { kuaishouTracking } = await import("../drizzle/schema");
+  const updateData: Record<string, unknown> = { status };
+  if (orderId) updateData.orderId = orderId;
+  await db.update(kuaishouTracking).set(updateData).where(eq(kuaishouTracking.id, trackingId));
+}

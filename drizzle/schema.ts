@@ -59,3 +59,27 @@ export const orders = mysqlTable("orders", {
 
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = typeof orders.$inferInsert;
+
+/**
+ * Kuaishou tracking data for ad attribution
+ */
+export const kuaishouTracking = mysqlTable("kuaishou_tracking", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Unique callback ID from Kuaishou */
+  callback: varchar("callback", { length: 256 }).notNull().unique(),
+  /** Ad plan ID */
+  adid: varchar("adid", { length: 128 }),
+  /** Channel identifier */
+  channel: varchar("channel", { length: 64 }).default("kuaishou").notNull(),
+  /** Additional tracking parameters as JSON */
+  params: text("params"),
+  /** Associated order ID (if any) */
+  orderId: int("orderId"),
+  /** Tracking status: pending, converted, failed */
+  status: mysqlEnum("status", ["pending", "converted", "failed"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type KuaishouTracking = typeof kuaishouTracking.$inferSelect;
+export type InsertKuaishouTracking = typeof kuaishouTracking.$inferInsert;

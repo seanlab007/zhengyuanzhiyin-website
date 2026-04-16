@@ -146,3 +146,16 @@
 - [x] 在Home中添加管理员权限检查
 - [x] 管理员支付页面自动跳过支付流程
 - [x] 管理员可以不付款直接查看测算结果
+
+
+## 快手广告追踪功能
+- [x] 创建kuaishou_tracking数据库表
+- [x] 生成数据库迁移SQL
+- [x] 在server/db.ts中添加快手追踪函数
+- [x] 在server/routers.ts中添加快手追踪API路由
+- [x] 创建落地页组件LandingPage.tsx
+- [x] 在App.tsx中添加/landing路由
+- [x] 修改orders.create支持kuaishouCallback参数
+- [x] 实现订单与追踪数据关联
+- [x] 创建快手投放链接文档（KUAISHOU_TRACKING.md）
+- [x] 生成投放链接模板：https://zhengyuanzhiyin-cb6tjthv.manus.space/landing?channel=kuaishou&callback=__CALLBACK__&adid=__DID__

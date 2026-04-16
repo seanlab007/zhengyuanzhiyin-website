@@ -15,12 +15,14 @@ import OrderHistory from "./pages/OrderHistory";
 import Complaint from "./pages/Complaint";
 import OrderLookup from "./pages/OrderLookup";
 import ResultPage from "./pages/ResultPage";
+import LandingPage from "./pages/LandingPage";
 import AdminContext, { useAdmin } from "./contexts/AdminContext";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/landing" component={LandingPage} />
       <Route path="/login" component={Login} />
       <Route path="/features" component={Features} />
       <Route path="/profile" component={Profile} />

@@ -15,6 +15,7 @@ export default function PaymentPage() {
   const isAdmin = params.get('admin') === 'true' && params.get('key') === 'admin123';
 
   const [payStep, setPayStep] = useState<'info' | 'qrcode' | 'polling' | 'success' | 'failed'>('info');
+  const [isAdminSuccess, setIsAdminSuccess] = useState(false);
   const [codeUrl, setCodeUrl] = useState('');
   const [isCreatingPay, setIsCreatingPay] = useState(false);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -52,12 +53,15 @@ export default function PaymentPage() {
     if (isAdmin && order && order.status === 'pending') {
       simulatePayMutation.mutate({ orderId });
     }
-  }, [isAdmin, order?.status]);
+  }, [isAdmin, order?.id]);
 
   // Simulate payment for admin (mark as paid)
   const simulatePayMutation = trpc.orders.simulatePay.useMutation({
     onSuccess: () => {
-      setPayStep('success');
+      setIsAdminSuccess(true);
+      setTimeout(() => {
+        navigate(`/result/${orderId}`);
+      }, 1000);
     },
     onError: (err) => {
       toast.error('标记支付失败');
@@ -165,19 +169,14 @@ export default function PaymentPage() {
     );
   }
 
-  // If already paid, redirect to result
-  if (order.status === 'paid') {
+  // If already paid or admin marked as success, redirect to result
+  if (order.status === 'paid' || isAdminSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #8b2252 0%, #4a1028 100%)' }}>
         <div className="text-center text-white space-y-4">
           <CheckCircle size={48} className="mx-auto text-green-400" />
-          <p className="text-lg font-bold">该订单已支付</p>
-          <button
-            onClick={() => navigate(`/result/${orderId}`)}
-            className="px-6 py-3 bg-white text-red-600 font-bold rounded-xl"
-          >
-            查看测算结果
-          </button>
+          <p className="text-lg font-bold">支付成功！</p>
+          <p className="text-sm text-pink-200">正在加载测算结果...</p>
         </div>
       </div>
     );

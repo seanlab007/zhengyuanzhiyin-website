@@ -147,6 +147,7 @@ export const appRouter = router({
         birthHour: z.string(),
         lunarDateStr: z.string().optional(),
         paymentMethod: z.enum(["wechat", "alipay"]),
+        kuaishouCallback: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const product = getProductByKey(input.productKey);
@@ -178,6 +179,17 @@ export const appRouter = router({
           lunarDateStr: input.lunarDateStr || null,
           inputData,
         });
+        // Associate with Kuaishou tracking if callback provided
+        if (input.kuaishouCallback) {
+          try {
+            const tracking = await db.getKuaishouTrackingByCallback(input.kuaishouCallback);
+            if (tracking) {
+              await db.updateKuaishouTrackingStatus(tracking.id, "converted", orderId);
+            }
+          } catch (e) {
+            console.error("Failed to update Kuaishou tracking:", e);
+          }
+        }
 
         return {
           orderId,
@@ -378,6 +390,43 @@ export const appRouter = router({
           throw new TRPCError({ code: "FORBIDDEN" });
         }
         return order;
+      }),
+  }),
+
+  // Kuaishou tracking
+  kuaishou: router({
+    createTracking: publicProcedure
+      .input(z.object({
+        callback: z.string().min(1),
+        adid: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          const trackingId = await db.createKuaishouTracking({
+            callback: input.callback,
+            adid: input.adid,
+          });
+          return { success: true, trackingId };
+        } catch (error: any) {
+          if (error.message?.includes("Duplicate")) {
+            const existing = await db.getKuaishouTrackingByCallback(input.callback);
+            return { success: true, trackingId: existing?.id };
+          }
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create tracking" });
+        }
+      }),
+
+    convertOrder: publicProcedure
+      .input(z.object({
+        callback: z.string(),
+        orderId: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        const tracking = await db.getKuaishouTrackingByCallback(input.callback);
+        if (!tracking) throw new TRPCError({ code: "NOT_FOUND", message: "Tracking not found" });
+        
+        await db.updateKuaishouTrackingStatus(tracking.id, "converted", input.orderId);
+        return { success: true };
       }),
   }),
 
