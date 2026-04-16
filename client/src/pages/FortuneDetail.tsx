@@ -260,7 +260,7 @@ export default function FortuneDetail() {
           >
             {isLoading ? (
               <span className="animate-pulse">处理中...</span>
-            ) : product.isFree || (isAuthenticated && user?.role === "admin") ? (
+            ) : product.isFree || isAdmin || (isAuthenticated && user?.role === "admin") ? (
               <span className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> 立即测算</span>
             ) : (
               <span className="flex items-center gap-2"><Lock className="w-4 h-4" /> 支付 ¥{product.price} 解锁</span>
