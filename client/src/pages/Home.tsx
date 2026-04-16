@@ -164,8 +164,8 @@ export default function Home() {
             {/* 半透明覆盖层 */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
             
-            {/* 表单覆盖在图片下方 */}
-            <div className="absolute bottom-0 left-0 right-0 px-4 py-4">
+            {/* 表单覆盖在图片中间 */}
+            <div className="absolute top-1/2 left-0 right-0 px-4 py-2 transform -translate-y-1/2">
               <div ref={formRef} className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #fef9f0, #fdf3e7)', border: '2px solid #e8c99b' }}>
                 <div className="px-4 py-3 space-y-3">
                   {/* 姓名 */}
