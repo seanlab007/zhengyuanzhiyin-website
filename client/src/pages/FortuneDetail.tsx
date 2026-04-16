@@ -37,8 +37,8 @@ export default function FortuneDetail() {
           productKey,
         });
       } else {
-        // 使用新的支付页面
-        const adminParams = isAdmin ? 'navigate(`/payment?order_id=${data.orderId}`);admin=truenavigate(`/payment?order_id=${data.orderId}`);key=admin123' : '';
+        // 使用新的支付页面，透传管理员参数
+        const adminParams = isAdmin ? '&admin=true&key=admin123' : '';
         navigate(`/payment?order_id=${data.orderId}${adminParams}`);
       }
     },
