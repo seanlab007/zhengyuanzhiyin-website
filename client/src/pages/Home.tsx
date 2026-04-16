@@ -40,10 +40,10 @@ export default function Home() {
           <div className="flex items-center justify-between mb-10">
             <div>
               <h1 className="font-serif text-2xl font-bold text-white drop-shadow-lg tracking-wider">
-                正缘指引
+                易学文化传承
               </h1>
               <p className="text-white/80 text-[11px] mt-0.5 tracking-wide">
-                探索命运 · 遇见真我
+                传承中华文化 · 弘扬易学智慧
               </p>
             </div>
             {isAuthenticated ? (
