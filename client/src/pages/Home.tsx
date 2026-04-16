@@ -227,48 +227,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 核心卖点模块 */}
-      <div className="px-4 py-4 max-w-md mx-auto space-y-4">
-        <div className="text-center mb-2">
-          <div className="inline-flex items-center gap-2 mb-1">
-            <Sparkles size={14} className="text-pink-400" />
-            <span className="text-pink-400 text-xs tracking-widest">付费后获取完整报告</span>
-            <Sparkles size={14} className="text-pink-400" />
-          </div>
-          <h2 className="text-white text-lg font-bold">你的姻缘分析报告包含</h2>
-        </div>
-        {coreModules.map((mod, idx) => (
-          <div
-            key={idx}
-            className={`rounded-2xl overflow-hidden border ${mod.borderColor}`}
-            style={{ background: 'rgba(255,255,255,0.04)' }}
-          >
-            <div className="px-5 py-4">
-              <div className="flex items-center gap-2.5 mb-3">
-                <span className="text-xl">{mod.icon}</span>
-                <h3 className={`${mod.titleColor} font-bold text-base`}>{mod.title}</h3>
-              </div>
-              <div className="space-y-2 mb-4 pl-1">
-                {mod.items.map((item, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <span className="text-pink-400 text-xs mt-1">·</span>
-                    <p className="text-gray-300 text-sm leading-relaxed">{item}</p>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                className="w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-95"
-                style={{ background: 'linear-gradient(135deg, #d4688e, #c0547a)', color: '#fff', boxShadow: '0 4px 15px rgba(212,104,142,0.4)' }}
-              >
-                🔓 立即解锁
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* 信息输入表单 */}
+      {/* 信息输入表单 - 移到这里 */}
       <div ref={formRef} className="px-4 py-4 max-w-md mx-auto">
         <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #fef9f0, #fdf3e7)', border: '2px solid #e8c99b' }}>
           <div className="px-5 py-6 space-y-5">
@@ -329,6 +288,57 @@ export default function Home() {
         </div>
       </div>
 
+      {/* 查询我的订单 */}
+      <div className="max-w-md mx-auto px-4 mb-4 text-center">
+        <button
+          onClick={() => navigate('/orders')}
+          className="text-blue-400 text-sm underline"
+        >
+          查询我的订单 &gt;
+        </button>
+      </div>
+
+      {/* 核心卖点模块 */}
+      <div className="px-4 py-4 max-w-md mx-auto space-y-4">
+        <div className="text-center mb-2">
+          <div className="inline-flex items-center gap-2 mb-1">
+            <Sparkles size={14} className="text-pink-400" />
+            <span className="text-pink-400 text-xs tracking-widest">付费后获取完整报告</span>
+            <Sparkles size={14} className="text-pink-400" />
+          </div>
+          <h2 className="text-white text-lg font-bold">你的姻缘分析报告包含</h2>
+        </div>
+        {coreModules.map((mod, idx) => (
+          <div
+            key={idx}
+            className={`rounded-2xl overflow-hidden border ${mod.borderColor}`}
+            style={{ background: 'rgba(255,255,255,0.04)' }}
+          >
+            <div className="px-5 py-4">
+              <div className="flex items-center gap-2.5 mb-3">
+                <span className="text-xl">{mod.icon}</span>
+                <h3 className={`${mod.titleColor} font-bold text-base`}>{mod.title}</h3>
+              </div>
+              <div className="space-y-2 mb-4 pl-1">
+                {mod.items.map((item, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="text-pink-400 text-xs mt-1">·</span>
+                    <p className="text-gray-300 text-sm leading-relaxed">{item}</p>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                className="w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #d4688e, #c0547a)', color: '#fff', boxShadow: '0 4px 15px rgba(212,104,142,0.4)' }}
+              >
+                🔓 立即解锁
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* 提示文字 */}
       <div className="max-w-md mx-auto px-4 mb-3">
         <p className="text-center text-gray-400 text-xs">
@@ -367,16 +377,6 @@ export default function Home() {
             同意《<span className="text-blue-400">用户隐私协议</span>》
           </span>
         </div>
-      </div>
-
-      {/* 查询我的订单 */}
-      <div className="max-w-md mx-auto px-4 mb-4 text-center">
-        <button
-          onClick={() => navigate('/orders')}
-          className="text-blue-400 text-sm underline"
-        >
-          查询我的订单 &gt;
-        </button>
       </div>
 
       {/* 底部信息 */}
