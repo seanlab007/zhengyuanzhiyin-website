@@ -7,10 +7,11 @@ import { orders } from '../../drizzle/schema';
  * 微信支付配置
  */
 const WECHAT_CONFIG = {
-  mchId: process.env.WECHAT_MERCHANT_ID || '',
-  apiKey: process.env.WECHAT_API_KEY || '',
-  appId: process.env.WECHAT_APP_ID || '',
-  notifyUrl: process.env.WECHAT_NOTIFY_URL || '',
+  mchId: process.env.WECHAT_MERCHANT_ID || '1111291395',
+  apiV3Key: process.env.WECHAT_API_V3_KEY || 'aqc123def456ghi787jkl012mno345pq',
+  appId: process.env.WECHAT_APP_ID || 'wx411431aeb832204f',
+  notifyUrl: process.env.WECHAT_NOTIFY_URL || 'https://www.zhengyuanzhiyin.com/api/wechat/callback',
+  publicKeyId: 'PUB_KEY_ID_011111291395202604150029223700460',
 };
 
 /**
@@ -21,12 +22,12 @@ export function generateWechatSignature(data: Record<string, any>): string {
   let str = '';
   
   for (const key of keys) {
-    if (data[key] !== '' && data[key] !== null && data[key] !== undefined) {
+    if (data[key] !== '' && data[key] !== null && data[key] !== undefined && key !== 'sign') {
       str += `${key}=${data[key]}&`;
     }
   }
   
-  str += `key=${WECHAT_CONFIG.apiKey}`;
+  str += `key=${WECHAT_CONFIG.apiV3Key}`;
   
   return crypto
     .createHash('md5')
@@ -63,24 +64,18 @@ export async function createWechatPayment(
     total_fee: Math.round(amount * 100), // 转换为分
     spbill_create_ip: clientIp,
     notify_url: WECHAT_CONFIG.notifyUrl,
-    trade_type: 'H5',
-    scene_info: JSON.stringify({
-      h5_info: {
-        type: 'WECHAT_PAY',
-        client_ip: clientIp,
-      },
-    }),
+    trade_type: 'NATIVE', // 扫码支付
   };
   
   // 生成签名
   const sign = generateWechatSignature(paymentData);
   (paymentData as any).sign = sign;
   
-  // 构建XML请求体
+  // 构建 XML请求体
   const xmlBody = buildXml(paymentData);
   
   try {
-    // 调用微信支付API
+    // 调用微信支付 API
     const response = await fetch('https://api.mch.weixin.qq.com/pay/unifiedorder', {
       method: 'POST',
       headers: {
@@ -93,10 +88,13 @@ export async function createWechatPayment(
     const result = parseXml(responseText);
     
     if (result.return_code === 'SUCCESS' && result.result_code === 'SUCCESS') {
+      // 返回二维码数据
       return {
         success: true,
         prepayId: result.prepay_id,
-        codeUrl: result.code_url,
+        codeUrl: result.code_url, // 扫码支付的二维码
+        orderId: orderId,
+        amount: amount,
       };
     } else {
       return {
