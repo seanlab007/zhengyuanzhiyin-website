@@ -125,4 +125,4 @@
 
 ## Bug修复 - 卖点板块丢失
 - [x] 恢复首页姻缘测试的8个锁定模块网格 + 5个核心卖点板块（个人性格、婚姻成长、婚姻格局、婚配要点、2026年幸福秘箱）
-- [x] 修复微信支付appid和mch_id不匹配问题（更新AppID为wx414431aeb832204f，密钥为aqc123def456ghi787jkl012mno345pq）
+- [x] 修复微信支付appid和mch_id不匹配问题（AppID: wx411431aeb832204f, APIv2密钥: bqc123def456ghi787jkl012mno366pq）

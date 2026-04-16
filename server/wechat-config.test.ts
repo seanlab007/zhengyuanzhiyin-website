@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 
 describe('WeChat Payment Configuration', () => {
   it('should have correct AppID from environment', () => {
-    const appId = process.env.WECHAT_APP_ID || 'wx414431aeb832204f';
-    expect(appId).toBe('wx414431aeb832204f');
+    const appId = process.env.WECHAT_APP_ID || 'wx411431aeb832204f';
+    expect(appId).toBe('wx411431aeb832204f');
   });
 
   it('should have correct merchant ID', () => {
@@ -18,7 +18,7 @@ describe('WeChat Payment Configuration', () => {
   });
 
   it('should have correct AppID format (starts with wx)', () => {
-    const appId = process.env.WECHAT_APP_ID || 'wx414431aeb832204f';
+    const appId = process.env.WECHAT_APP_ID || 'wx411431aeb832204f';
     expect(appId.startsWith('wx')).toBe(true);
     expect(appId.length).toBeGreaterThan(0);
   });
@@ -29,10 +29,10 @@ describe('WeChat Payment Configuration', () => {
   });
 
   it('should verify AppID matches merchant ID binding', () => {
-    const appId = process.env.WECHAT_APP_ID || 'wx414431aeb832204f';
+    const appId = process.env.WECHAT_APP_ID || 'wx411431aeb832204f';
     const mchId = process.env.WECHAT_MERCHANT_ID || '1111291395';
-    // AppID wx414431aeb832204f is bound to merchant 1111291395
-    expect(appId).toBe('wx414431aeb832204f');
+    // AppID wx411431aeb832204f is bound to merchant 1111291395
+    expect(appId).toBe('wx411431aeb832204f');
     expect(mchId).toBe('1111291395');
   });
 });

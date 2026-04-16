@@ -8,9 +8,9 @@ import { orders } from '../../drizzle/schema';
  */
 const WECHAT_CONFIG = {
   mchId: process.env.WECHAT_MERCHANT_ID || '1111291395',
-  apiV2Key: process.env.WECHAT_API_V2_KEY || 'aqc123def456ghi787jkl012mno345pq',
+  apiV2Key: process.env.WECHAT_API_V2_KEY || 'bqc123def456ghi787jkl012mno366pq',
   apiV3Key: process.env.WECHAT_API_V3_KEY || 'aqc123def456ghi787jkl012mno345pq',
-  appId: process.env.WECHAT_APP_ID || 'wx414431aeb832204f',
+  appId: process.env.WECHAT_APP_ID || 'wx411431aeb832204f',
   notifyUrl: process.env.WECHAT_NOTIFY_URL || 'https://www.zhengyuanzhiyin.com/api/wechat/callback',
 };
 
