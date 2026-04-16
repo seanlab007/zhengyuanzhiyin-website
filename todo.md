@@ -160,3 +160,5 @@
 - [x] 创建快手投放链接文档（KUAISHOU_TRACKING.md）
 - [x] 生成投放链接模板：https://zhengyuanzhiyin-cb6tjthv.manus.space/landing?channel=kuaishou&callback=__CALLBACK__&adid=__DID__
 - [x] 修复管理员支付页面自动跳过支付流程
+- [x] 首页最终布局 - 表单紧接着Hero图片下方，一进来就开始算命付费
+

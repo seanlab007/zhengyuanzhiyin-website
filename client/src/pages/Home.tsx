@@ -149,83 +149,78 @@ export default function Home() {
       <FloatingButtons />
 
       {/* Hero Section - 欢迎页面 */}
-      <div className="relative pt-8 pb-6 px-4">
+      <div className="relative pt-8 pb-0 px-4">
         <div className="max-w-md mx-auto text-center">
           <h1 className="text-white text-2xl font-bold mb-2">姻缘测试</h1>
           <p className="text-gray-400 text-sm mb-6">恋爱婚姻 · 爱情秘籍 · 婚姻分析</p>
           
-          {/* Hero Image */}
-          <div className="relative mb-0 rounded-3xl overflow-hidden border-4 border-yellow-400/50 shadow-2xl">
+          {/* Hero Image with Form Overlay */}
+          <div className="relative rounded-3xl overflow-hidden border-4 border-yellow-400/50 shadow-2xl">
             <img 
               src={HERO_IMG} 
               alt="Marriage Test" 
               className="w-full h-auto"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-          </div>
-        </div>
-      </div>
+            {/* 半透明覆盖层 */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
+            
+            {/* 表单覆盖在图片下方 */}
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-4">
+              <div ref={formRef} className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #fef9f0, #fdf3e7)', border: '2px solid #e8c99b' }}>
+                <div className="px-4 py-3 space-y-3">
+                  {/* 姓名 */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-red-700 font-bold text-xs whitespace-nowrap min-w-[50px]">您的姓名：</label>
+                    <input
+                      type="text"
+                      placeholder="请输入姓名（汉字）"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      className="flex-1 bg-transparent border-b border-gray-300 py-1 text-gray-700 text-xs placeholder:text-gray-400 outline-none focus:border-red-400 transition-colors"
+                    />
+                  </div>
 
-      {/* 信息输入表单 - 紧凑设计 */}
-      <div ref={formRef} className="px-4 py-3 max-w-md mx-auto">
-        <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #fef9f0, #fdf3e7)', border: '2px solid #e8c99b' }}>
-          <div className="px-5 py-4 space-y-4">
-            {/* 姓名 */}
-            <div className="flex items-center gap-2">
-              <label className="text-red-700 font-bold text-sm whitespace-nowrap min-w-[60px]">您的姓名：</label>
-              <input
-                type="text"
-                placeholder="请输入姓名（汉字）"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                className="flex-1 bg-transparent border-b border-gray-300 py-1.5 text-gray-700 text-sm placeholder:text-gray-400 outline-none focus:border-red-400 transition-colors"
-              />
-            </div>
+                  {/* 性别 */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-red-700 font-bold text-xs whitespace-nowrap min-w-[50px]">您的性别：</label>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setGender('男')}
+                        className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all ${gender === '男' ? 'border-red-500 bg-red-50 text-red-600' : 'border-gray-300 bg-white text-gray-500'}`}
+                      >
+                        男
+                      </button>
+                      <button
+                        onClick={() => setGender('女')}
+                        className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all ${gender === '女' ? 'border-red-500 bg-red-50 text-red-600' : 'border-gray-300 bg-white text-gray-500'}`}
+                      >
+                        女
+                      </button>
+                    </div>
+                  </div>
 
-            {/* 性别 */}
-            <div className="flex items-center gap-2">
-              <label className="text-red-700 font-bold text-sm whitespace-nowrap min-w-[60px]">您的性别：</label>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setGender('男')}
-                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all ${
-                    gender === '男'
-                      ? 'border-red-500 bg-red-50 text-red-600'
-                      : 'border-gray-300 bg-white text-gray-500'
-                  }`}
-                >
-                  男
-                </button>
-                <button
-                  onClick={() => setGender('女')}
-                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all ${
-                    gender === '女'
-                      ? 'border-red-500 bg-red-50 text-red-600'
-                      : 'border-gray-300 bg-white text-gray-500'
-                  }`}
-                >
-                  女
-                </button>
+                  {/* 出生日期 */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-red-700 font-bold text-xs whitespace-nowrap min-w-[50px]">出生日期：</label>
+                    <button
+                      onClick={() => setShowDatePicker(true)}
+                      className="flex-1 bg-transparent border-b border-gray-300 py-1 text-left text-xs outline-none"
+                    >
+                      {birthDisplay ? (
+                        <span className="text-gray-700">{birthDisplay}</span>
+                      ) : (
+                        <span className="text-gray-400">请选择出生日期</span>
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-
-            {/* 出生日期 */}
-            <div className="flex items-center gap-2">
-              <label className="text-red-700 font-bold text-sm whitespace-nowrap min-w-[60px]">出生日期：</label>
-              <button
-                onClick={() => setShowDatePicker(true)}
-                className="flex-1 bg-transparent border-b border-gray-300 py-1.5 text-left text-sm outline-none"
-              >
-                {birthDisplay ? (
-                  <span className="text-gray-700">{birthDisplay}</span>
-                ) : (
-                  <span className="text-gray-400">请选择出生日期</span>
-                )}
-              </button>
-            </div>
           </div>
         </div>
       </div>
+
+
 
       {/* 立即测算按钮 - 突出显示 */}
       <div className="px-4 py-3 max-w-md mx-auto">
