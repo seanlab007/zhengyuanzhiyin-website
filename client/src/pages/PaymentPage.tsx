@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { AlertCircle, Clock, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertCircle, Clock, CheckCircle2, AlertTriangle, Loader2, Lock } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 
 export default function PaymentPage() {
@@ -163,32 +163,125 @@ export default function PaymentPage() {
           </div>
         </Card>
 
-        {/* 功能说明 */}
-        <Card className="mb-6 bg-white border-0 shadow-md">
-          <div className="p-4 space-y-3">
-            <div className="flex gap-3">
-              <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-gray-800">深度分析感情问题</p>
-                <p className="text-xs text-gray-600">从八字命理角度分析您的感情困境和缘分走向</p>
+        {/* 你的姻缘分析报告 - 8个核心模块 */}
+        <Card className="mb-6 bg-white border-0 shadow-md overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-100 to-amber-100 p-4 border-b-2 border-orange-300">
+            <h3 className="text-center font-bold text-gray-800 mb-4">你的姻缘分析报告</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                <Lock size={20} className="text-orange-500 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-gray-800">婚前性格</p>
               </div>
-            </div>
-            <div className="flex gap-3">
-              <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-gray-800">一对一咨询指导</p>
-                <p className="text-xs text-gray-600">获得报告后可加微信与专业老师深入沟通</p>
+              <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                <Lock size={20} className="text-rose-500 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-gray-800">姻缘分析</p>
               </div>
-            </div>
-            <div className="flex gap-3">
-              <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-gray-800">快速获得答案</p>
-                <p className="text-xs text-gray-600">支付后立即获得详细分析，不用等待</p>
+              <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                <Lock size={20} className="text-orange-500 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-gray-800">感情发展</p>
+              </div>
+              <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                <Lock size={20} className="text-rose-500 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-gray-800">异性魅力</p>
+              </div>
+              <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                <Lock size={20} className="text-orange-500 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-gray-800">婚姻建议</p>
+              </div>
+              <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                <Lock size={20} className="text-rose-500 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-gray-800">缘分指数</p>
+              </div>
+              <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                <Lock size={20} className="text-orange-500 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-gray-800">感情困境</p>
+              </div>
+              <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                <Lock size={20} className="text-rose-500 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-gray-800">幸福指数</p>
               </div>
             </div>
           </div>
         </Card>
+
+        {/* 核心卖点模块 */}
+        <div className="space-y-4 mb-6">
+          {/* 模块1 */}
+          <Card className="bg-white border-0 shadow-md overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-100 to-amber-100 p-4">
+              <h4 className="text-center font-bold text-gray-800 mb-3">解析个人性格对感情的影响</h4>
+              <div className="bg-white rounded-lg p-3 space-y-2 text-sm">
+                <p className="text-gray-700">• 分析你潜在吸引异性的个人魅力</p>
+                <p className="text-gray-700">• 如何经营幸福稳定的婚姻生活？</p>
+                <p className="text-gray-700">• 分析哪些因素对你的感情不利</p>
+              </div>
+              <button className="w-full mt-3 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-all">
+                🔓 立即解锁
+              </button>
+            </div>
+          </Card>
+
+          {/* 模块2 */}
+          <Card className="bg-white border-0 shadow-md overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-100 to-amber-100 p-4">
+              <h4 className="text-center font-bold text-gray-800 mb-3">探索婚姻成长方向</h4>
+              <div className="bg-white rounded-lg p-3 space-y-2 text-sm">
+                <p className="text-gray-700">• 解析你的姻缘情况</p>
+                <p className="text-gray-700">• 了解你的择偶倾向与感情特质</p>
+                <p className="text-gray-700">• 专业点评适合你的婚配对象</p>
+              </div>
+              <button className="w-full mt-3 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-all">
+                🔓 立即解锁
+              </button>
+            </div>
+          </Card>
+
+          {/* 模块3 */}
+          <Card className="bg-white border-0 shadow-md overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-100 to-amber-100 p-4">
+              <h4 className="text-center font-bold text-gray-800 mb-3">你的婚姻格局</h4>
+              <div className="bg-white rounded-lg p-3 space-y-2 text-sm">
+                <p className="text-gray-700">• 婚姻对象的条件和特征</p>
+                <p className="text-gray-700">• 婚后感情生活分析</p>
+                <p className="text-gray-700">• 根据伴侣性格和谐相处的技巧</p>
+              </div>
+              <button className="w-full mt-3 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-all">
+                🔓 立即解锁
+              </button>
+            </div>
+          </Card>
+
+          {/* 模块4 */}
+          <Card className="bg-white border-0 shadow-md overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-100 to-amber-100 p-4">
+              <h4 className="text-center font-bold text-gray-800 mb-3">你最应了解的婚配要点</h4>
+              <div className="bg-white rounded-lg p-3 space-y-2 text-sm">
+                <p className="text-gray-700">• 你适合早婚还是晚婚？</p>
+                <p className="text-gray-700">• 守护婚姻长期亲密的策略</p>
+                <p className="text-gray-700">• 老师专业点评适合你的婚配对象！</p>
+              </div>
+              <button className="w-full mt-3 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-all">
+                🔓 立即解锁
+              </button>
+            </div>
+          </Card>
+
+          {/* 模块5 - 2026年爱情幸福秘箱 */}
+          <Card className="bg-white border-0 shadow-md overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-100 to-amber-100 p-4">
+              <h4 className="text-center font-bold text-gray-800 mb-3">2026年爱情幸福秘箱</h4>
+              <div className="bg-white rounded-lg p-3 space-y-2 text-sm">
+                <p className="text-gray-700">• 我要拍拖</p>
+                <p className="text-gray-700">• 我要提升人缘</p>
+                <p className="text-gray-700">• 我要爱情更加甜蜜</p>
+                <p className="text-gray-700">• 防止爱人变心！</p>
+              </div>
+              <button className="w-full mt-3 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-all">
+                🔓 立即解锁
+              </button>
+            </div>
+          </Card>
+        </div>
 
         {/* 支付方式 */}
         {paymentStatus === null && (
