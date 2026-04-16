@@ -291,6 +291,16 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            {/* 立即解锁按钮 */}
+            <button
+              onClick={() => {
+                navigate(`/payment?product=marriage&name=${name}&gender=${gender}`);
+              }}
+              className="w-full mt-4 py-2.5 rounded-full bg-gradient-to-r from-pink-400 to-rose-400 text-white font-bold text-sm hover:from-pink-500 hover:to-rose-500 transition-all shadow-lg flex items-center justify-center gap-2"
+            >
+              <Lock size={14} />
+              立即解锁
+            </button>
           </div>
         </div>
       </div>
