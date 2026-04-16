@@ -53,7 +53,7 @@ export default function PaymentPage() {
     if (isAdmin && order && order.status === 'pending') {
       simulatePayMutation.mutate({ orderId });
     }
-  }, [isAdmin, order?.id]);
+  }, [isAdmin, order?.status, orderId]);
 
   // Simulate payment for admin (mark as paid)
   const simulatePayMutation = trpc.orders.simulatePay.useMutation({
