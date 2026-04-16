@@ -268,14 +268,12 @@ export default function Home() {
             苏ICP备2021048491号-4
           </a>
           {" "} |{" "}
-          <a
-            href="https://work.weixin.qq.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-primary transition-colors"
+          <button
+            onClick={() => navigate("/complaint")}
+            className="underline hover:text-primary transition-colors cursor-pointer bg-transparent border-0 p-0"
           >
             客服投诉
-          </a>
+          </button>
         </p>
       </footer>
     </div>

@@ -13,6 +13,7 @@ import PayPage from "./pages/PayPage";
 import PaymentPage from "./pages/PaymentPage";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import OrderHistory from "./pages/OrderHistory";
+import ComplaintForm from "./pages/ComplaintForm";
 import MobileLayout from "./components/MobileLayout";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/payment" component={PaymentPage} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/orders" component={OrderHistory} />
+      <Route path="/complaint" component={ComplaintForm} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
