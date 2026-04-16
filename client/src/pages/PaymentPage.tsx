@@ -1,338 +1,294 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useSearch } from 'wouter';
-import { ChevronLeft, Loader2, Shield, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'wouter';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { AlertCircle, Clock, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
-import { toast } from 'sonner';
-import { QRCodeSVG } from 'qrcode.react';
-import FloatingButtons from '@/components/FloatingButtons';
 
 export default function PaymentPage() {
-  const [, navigate] = useLocation();
-  const search = useSearch();
-  const params = new URLSearchParams(search);
-  const orderId = Number(params.get('order_id'));
-  const orderNoParam = params.get('order_no') || '';
+  const [searchParams] = useSearchParams();
+  const orderId = parseInt(searchParams.get('order_id') || '0', 10);
+  
+  const [timeLeft, setTimeLeft] = useState(1203); // 20:03
+  const [paymentMethod, setPaymentMethod] = useState<'wechat' | 'alipay' | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
 
-  const [payStep, setPayStep] = useState<'info' | 'qrcode' | 'polling' | 'success' | 'failed'>('info');
-  const [codeUrl, setCodeUrl] = useState('');
-  const [isCreatingPay, setIsCreatingPay] = useState(false);
-  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // 获取订单详情
+  const { data: order, isLoading: orderLoading } = trpc.orders.getById.useQuery(
+    { orderId },
+    { enabled: orderId > 0 }
+  );
 
-  // Countdown timer for urgency
-  const [timeLeft, setTimeLeft] = useState(1800);
+  // 模拟支付mutation
+  const simulatePayMutation = trpc.orders.simulatePay.useMutation();
+
+  // 倒计时
   useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(prev => (prev > 0 ? prev - 1 : 0)), 1000);
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 0) return 0;
+        return prev - 1;
+      });
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const formatCountdown = (s: number) => {
-    const mm = String(Math.floor(s / 60)).padStart(2, '0');
-    const ss = String(s % 60).padStart(2, '0');
-    return `${mm}:${ss}`;
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  // Fetch order
-  const { data: order, isLoading, error } = trpc.orders.getById.useQuery(
-    { orderId },
-    { enabled: !!orderId }
-  );
+  const handlePayment = async (method: 'wechat' | 'alipay') => {
+    if (!orderId || !order) return;
+    
+    setPaymentMethod(method);
+    setIsProcessing(true);
 
-  // Create WeChat payment mutation
-  const createPayMutation = trpc.orders.createWechatPay.useMutation({
-    onSuccess: (data) => {
-      setIsCreatingPay(false);
-      if (data.alreadyPaid) {
-        setPayStep('success');
-        setTimeout(() => navigate(`/result/${orderId}`), 2000);
-        return;
-      }
-      if (data.codeUrl) {
-        setCodeUrl(data.codeUrl);
-        setPayStep('qrcode');
-        // Start polling for payment status
-        startPolling();
-      } else {
-        toast.error('获取支付二维码失败');
-        setPayStep('failed');
-      }
-    },
-    onError: (err) => {
-      setIsCreatingPay(false);
-      toast.error(err.message || '创建支付失败');
-      setPayStep('failed');
-    },
-  });
-
-  // Check payment status
-  const checkStatusQuery = trpc.orders.checkPayStatus.useQuery(
-    { orderId },
-    { enabled: false }
-  );
-
-  const startPolling = () => {
-    if (pollingRef.current) clearInterval(pollingRef.current);
-    pollingRef.current = setInterval(async () => {
+    // 模拟支付流程
+    setTimeout(async () => {
       try {
-        const result = await checkStatusQuery.refetch();
-        if (result.data?.paid) {
-          stopPolling();
-          setPayStep('success');
-          toast.success('支付成功！');
-          setTimeout(() => navigate(`/result/${orderId}`), 2000);
+        // 模拟支付成功（90%概率）或失败（10%概率）
+        const isSuccess = Math.random() > 0.1;
+        
+        if (isSuccess) {
+          // 调用后端API确认支付
+          await simulatePayMutation.mutateAsync({
+            orderId,
+            paymentMethod: method,
+          });
+          
+          setPaymentStatus('success');
+          // 3秒后跳转到结果页面
+          setTimeout(() => {
+            window.location.href = `/fortune/${order.productKey}?order_id=${orderId}`;
+          }, 3000);
+        } else {
+          setPaymentStatus('failed');
+          setIsProcessing(false);
         }
-      } catch (e) {
-        // Ignore polling errors
+      } catch (error) {
+        console.error('Payment error:', error);
+        setPaymentStatus('failed');
+        setIsProcessing(false);
       }
-    }, 3000); // Poll every 3 seconds
+    }, 2000);
   };
 
-  const stopPolling = () => {
-    if (pollingRef.current) {
-      clearInterval(pollingRef.current);
-      pollingRef.current = null;
-    }
+  const handleRetry = () => {
+    setPaymentStatus(null);
+    setPaymentMethod(null);
   };
 
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => stopPolling();
-  }, []);
-
-  const handlePay = () => {
-    if (!orderId) return;
-    setIsCreatingPay(true);
-    setPayStep('info');
-    createPayMutation.mutate({ orderId });
-  };
-
-  if (!orderId) {
+  if (orderLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #8b2252 0%, #4a1028 100%)' }}>
-        <div className="text-center text-white">
-          <AlertTriangle size={48} className="mx-auto mb-4 text-pink-300" />
-          <p className="text-lg mb-2">订单信息无效</p>
-          <button onClick={() => navigate('/')} className="text-pink-200 underline text-sm">返回首页</button>
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 size={48} className="text-purple-500 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">加载订单信息...</p>
         </div>
       </div>
     );
   }
 
-  if (isLoading) {
+  if (!order) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #8b2252 0%, #4a1028 100%)' }}>
-        <Loader2 size={32} className="animate-spin text-white" />
-      </div>
-    );
-  }
-
-  if (error || !order) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #8b2252 0%, #4a1028 100%)' }}>
-        <div className="text-center text-white">
-          <AlertTriangle size={48} className="mx-auto mb-4 text-pink-300" />
-          <p className="text-lg mb-2">订单不存在</p>
-          <button onClick={() => navigate('/')} className="text-pink-200 underline text-sm">返回首页</button>
-        </div>
-      </div>
-    );
-  }
-
-  // If already paid, redirect to result
-  if (order.status === 'paid') {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #8b2252 0%, #4a1028 100%)' }}>
-        <div className="text-center text-white space-y-4">
-          <CheckCircle size={48} className="mx-auto text-green-400" />
-          <p className="text-lg font-bold">该订单已支付</p>
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-white flex items-center justify-center">
+        <div className="text-center max-w-md px-4">
+          <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
+          <h1 className="text-xl font-bold text-gray-800 mb-2">订单不存在</h1>
+          <p className="text-gray-600 mb-4">无法找到您的订单信息，请重新开始</p>
           <button
-            onClick={() => navigate(`/result/${orderId}`)}
-            className="px-6 py-3 bg-white text-red-600 font-bold rounded-xl"
+            onClick={() => window.location.href = '/'}
+            className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-6 rounded-lg"
           >
-            查看测算结果
+            返回首页
           </button>
         </div>
       </div>
     );
   }
-
-  const customerName = order.customerName || '用户';
-  const customerGender = order.customerGender || '';
-  const lunarDateStr = order.lunarDateStr || '';
 
   return (
-    <div className="min-h-screen pb-8" style={{ background: 'linear-gradient(180deg, #8b2252 0%, #6b1a3a 50%, #4a1028 100%)' }}>
-      <FloatingButtons />
-
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#8b2252] border-b border-pink-700/30 flex items-center px-4 py-3">
-        <button onClick={() => { stopPolling(); navigate('/'); }} className="text-pink-200">
-          <ChevronLeft size={24} />
-        </button>
-        <h1 className="flex-1 text-center font-bold text-base text-white">{order.productName}</h1>
-        <div className="w-6" />
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-white pb-20">
+      {/* 顶部横幅 */}
+      <div className="bg-gradient-to-r from-rose-500 to-pink-500 text-white py-8 px-4 text-center">
+        <h1 className="text-2xl font-bold mb-2">{order.productName}</h1>
+        <p className="text-sm opacity-90">已为 1,576,576 人提供专业分析</p>
+        <p className="text-xs opacity-80 mt-1">97.8% 的用户对分析结果非常满意</p>
       </div>
 
-      <div className="max-w-md mx-auto px-4 py-6 space-y-6">
-        {/* User info card */}
-        <div className="rounded-2xl p-5" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <p className="text-pink-200 text-sm mb-3">
-            亲爱的{customerName}
-          </p>
-          <p className="text-white text-base">
-            通过分析你的 <span className="text-yellow-300 font-bold">个人姻缘</span>，看你的姻缘状况
-          </p>
-        </div>
-
-        {/* Info summary */}
-        <div className="rounded-2xl p-5" style={{ background: 'rgba(255,200,150,0.15)', border: '1px solid rgba(255,200,150,0.2)' }}>
-          <div className="space-y-2 text-sm">
-            <div className="flex gap-4">
-              <span className="text-pink-200">姓名：</span>
-              <span className="text-white font-medium">{customerName}</span>
-              <span className="text-pink-200 ml-4">性别：</span>
-              <span className="text-white font-medium">{customerGender}</span>
+      {/* 主要内容 */}
+      <div className="max-w-md mx-auto px-4 py-6">
+        {/* 用户评价卡片 */}
+        <Card className="mb-6 bg-white border-0 shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-amber-100 to-orange-100 p-4 border-b border-amber-200">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">⭐</span>
+              <span className="font-semibold text-gray-800">用户好评</span>
             </div>
-            {lunarDateStr && (
-              <div className="flex gap-4">
-                <span className="text-pink-200">农(阴)历：</span>
-                <span className="text-white font-medium">{lunarDateStr}</span>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              "测算结果非常准确，对我的生活有很大帮助！"
+            </p>
+            <p className="text-xs text-gray-600 mt-2">— 用户好评</p>
+          </div>
+        </Card>
+
+        {/* 价格卡片 */}
+        <Card className="mb-6 bg-white border-0 shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6">
+            <div className="text-center mb-4">
+              <p className="text-sm text-gray-600 mb-2">限时特惠价</p>
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="text-4xl font-bold text-rose-500">¥{order.amount}</span>
+                <span className="text-lg text-gray-400 line-through">¥{(parseFloat(order.amount) * 2.67).toFixed(1)}</span>
               </div>
-            )}
+              <p className="text-xs text-rose-500 font-semibold mt-2">
+                节省 ¥{(parseFloat(order.amount) * 1.67).toFixed(1)}
+              </p>
+            </div>
+
+            {/* 倒计时 */}
+            <div className="bg-white rounded-lg p-3 text-center border border-purple-200">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <Clock size={16} className="text-purple-500" />
+                <span className="text-xs text-gray-600">优惠倒计时</span>
+              </div>
+              <div className="text-2xl font-mono font-bold text-rose-500">
+                {formatTime(timeLeft)}
+              </div>
+            </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Price section */}
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-2">
-              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">限时优惠</span>
-              <span className="text-white text-2xl font-black">¥{order.amount}</span>
-              <span className="text-white text-2xl font-black">元</span>
+        {/* 功能说明 */}
+        <Card className="mb-6 bg-white border-0 shadow-md">
+          <div className="p-4 space-y-3">
+            <div className="flex gap-3">
+              <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-gray-800">即时获取结果</p>
+                <p className="text-xs text-gray-600">付费后立即查看完整分析报告</p>
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-pink-300 text-xs">距优惠结束</p>
-              <p className="text-red-400 font-mono font-bold text-lg">{formatCountdown(timeLeft)}</p>
+            <div className="flex gap-3">
+              <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-gray-800">专业团队分析</p>
+                <p className="text-xs text-gray-600">由资深命理师团队精心打造</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <CheckCircle2 size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-gray-800">永久保存</p>
+                <p className="text-xs text-gray-600">结果永久保存，随时可查看</p>
+              </div>
             </div>
           </div>
-          <p className="text-gray-400 text-xs line-through">原价：¥99.00元</p>
-        </div>
+        </Card>
 
-        <div className="border-t border-pink-800/30" />
+        {/* 支付方式 */}
+        {paymentStatus === null && (
+          <>
+            <p className="text-center text-sm text-gray-600 mb-4 font-semibold">选择支付方式</p>
+            
+            <div className="space-y-3 mb-6">
+              {/* 微信支付 */}
+              <button
+                onClick={() => handlePayment('wechat')}
+                disabled={isProcessing}
+                className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-4 rounded-xl shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                </svg>
+                <span>微信支付</span>
+              </button>
 
-        {/* Trust text */}
-        <p className="text-center text-pink-200 text-sm">
-          报告生成后，只有您自己能查看，请放心领取！
-        </p>
-
-        {/* QR Code display */}
-        {payStep === 'qrcode' && codeUrl && (
-          <div className="text-center space-y-4">
-            <div className="bg-white rounded-2xl p-6 mx-auto inline-block">
-              <QRCodeSVG value={codeUrl} size={200} />
+              {/* 支付宝支付 */}
+              <button
+                onClick={() => handlePayment('alipay')}
+                disabled={isProcessing}
+                className="w-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-4 rounded-xl shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z"/>
+                </svg>
+                <span>支付宝支付</span>
+              </button>
             </div>
-            <p className="text-white font-bold text-base">请使用微信扫码支付</p>
-            <div className="flex items-center justify-center gap-2 text-green-400 text-sm">
-              <Loader2 size={16} className="animate-spin" />
-              <span>等待支付中...</span>
+          </>
+        )}
+
+        {/* 处理中状态 */}
+        {isProcessing && paymentStatus === null && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center mb-6">
+            <div className="inline-block">
+              <Loader2 size={32} className="text-blue-500 animate-spin mb-3" />
+            </div>
+            <p className="text-sm font-semibold text-gray-800">正在处理支付...</p>
+            <p className="text-xs text-gray-600 mt-1">请稍候，不要关闭页面</p>
+          </div>
+        )}
+
+        {/* 成功状态 */}
+        {paymentStatus === 'success' && (
+          <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center mb-6">
+            <div className="mb-3">
+              <CheckCircle2 size={48} className="text-green-500 mx-auto" />
+            </div>
+            <p className="text-lg font-bold text-green-700 mb-1">支付成功！</p>
+            <p className="text-sm text-green-600 mb-4">正在跳转到结果页面...</p>
+            <div className="text-xs text-green-600">
+              <p>订单号：{orderId}</p>
+            </div>
+          </div>
+        )}
+
+        {/* 失败状态 */}
+        {paymentStatus === 'failed' && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
+            <div className="flex gap-3 mb-4">
+              <AlertTriangle size={24} className="text-red-500 flex-shrink-0" />
+              <div>
+                <p className="font-bold text-red-700">支付失败</p>
+                <p className="text-sm text-red-600 mt-1">支付过程中出现错误，请重试</p>
+              </div>
             </div>
             <button
-              onClick={() => {
-                stopPolling();
-                setPayStep('info');
-                setCodeUrl('');
-              }}
-              className="text-pink-300 text-xs underline"
+              onClick={handleRetry}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-lg transition-colors"
             >
-              取消支付
-            </button>
-          </div>
-        )}
-
-        {/* Pay button - show when no QR code yet */}
-        {payStep === 'info' && !isCreatingPay && (
-          <button
-            onClick={handlePay}
-            className="w-full py-4 rounded-2xl font-bold text-lg text-white flex items-center justify-center gap-3 transition-all active:scale-95"
-            style={{ background: 'linear-gradient(135deg, #07C160, #06ad56)', boxShadow: '0 6px 20px rgba(7,193,96,0.4)' }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-              <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348z"/>
-            </svg>
-            点此微信支付
-          </button>
-        )}
-
-        {/* Creating payment loading */}
-        {isCreatingPay && (
-          <div className="text-center py-6">
-            <Loader2 size={48} className="text-green-400 animate-spin mx-auto mb-4" />
-            <p className="text-white font-bold text-lg">正在创建支付订单...</p>
-          </div>
-        )}
-
-        {/* Success */}
-        {payStep === 'success' && (
-          <div className="text-center py-6">
-            <CheckCircle size={64} className="text-green-400 mx-auto mb-4" />
-            <p className="text-white font-bold text-xl">支付成功！</p>
-            <p className="text-pink-200 text-sm mt-2">正在跳转到结果页面...</p>
-          </div>
-        )}
-
-        {/* Failed */}
-        {payStep === 'failed' && (
-          <div className="text-center py-6">
-            <AlertTriangle size={48} className="text-red-400 mx-auto mb-4" />
-            <p className="text-white font-bold text-lg mb-2">支付创建失败</p>
-            <p className="text-pink-300 text-sm mb-4">可能是微信支付配置问题，请联系客服</p>
-            <button
-              onClick={() => { setPayStep('info'); }}
-              className="py-3 px-8 rounded-2xl font-bold text-white flex items-center justify-center gap-2 mx-auto"
-              style={{ background: 'linear-gradient(135deg, #d4688e, #c0547a)' }}
-            >
-              <RefreshCw size={16} />
               重新支付
             </button>
           </div>
         )}
 
-        {/* Order number */}
-        <div className="text-center">
-          <p className="text-gray-400 text-xs">
-            订单号：{order.orderNo || orderNoParam}
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(order.orderNo || orderNoParam);
-                toast.success('订单号已复制');
-              }}
-              className="ml-2 text-blue-400 underline"
-            >
-              复制
-            </button>
-          </p>
-        </div>
-
-        {/* Trust badges */}
-        <div className="flex items-center justify-center gap-4 py-3">
-          <div className="flex items-center gap-1 text-green-400 text-xs">
-            <Shield size={14} />
-            <span>安全联盟实名验证</span>
+        {/* 安全提示 */}
+        <Card className="bg-blue-50 border border-blue-200 shadow-none">
+          <div className="p-4">
+            <div className="flex gap-2 mb-2">
+              <AlertCircle size={16} className="text-blue-500 flex-shrink-0 mt-0.5" />
+              <p className="text-xs font-semibold text-blue-800">安全保障</p>
+            </div>
+            <p className="text-xs text-blue-700 leading-relaxed">
+              支付系统已通过安全联盟认证，您的信息完全保密。支付过程由微信/支付宝官方处理，我们不会保存您的支付信息。
+            </p>
           </div>
-          <div className="flex items-center gap-1 text-blue-400 text-xs">
-            <Shield size={14} />
-            <span>网上交易保障中心</span>
-          </div>
-        </div>
+        </Card>
+      </div>
 
-        <p className="text-center text-red-400 text-xs font-medium">
-          支付系统已通过安全联盟认证请放心使用
+      {/* 底部客服 */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 max-w-md mx-auto">
+        <p className="text-xs text-center text-gray-600">
+          遇到问题？
+          <button className="text-rose-500 font-semibold hover:underline ml-1">
+            联系客服
+          </button>
         </p>
-
-        {/* Bottom info */}
-        <div className="border-t border-pink-800/30 pt-4 text-center space-y-1">
-          <p className="text-gray-500 text-xs">结果内容仅供参考，请理性付费</p>
-          <p className="text-gray-600 text-xs">联系电话：18888251399</p>
-        </div>
       </div>
     </div>
   );

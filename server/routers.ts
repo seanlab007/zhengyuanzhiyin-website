@@ -10,22 +10,9 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createHash } from "crypto";
 import { nanoid } from "nanoid";
-import { createWechatPayment, queryWechatOrder } from "./payment/wechat";
 
 function hashPassword(password: string): string {
   return createHash("sha256").update(password).digest("hex");
-}
-
-function generateOrderNo(): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  const h = String(now.getHours()).padStart(2, "0");
-  const min = String(now.getMinutes()).padStart(2, "0");
-  const s = String(now.getSeconds()).padStart(2, "0");
-  const rand = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
-  return `${y}${m}${d}${h}${min}${s}${rand}`;
 }
 
 // Admin hardcoded credentials
@@ -43,7 +30,7 @@ export const appRouter = router({
       return { success: true } as const;
     }),
 
-    // Phone login/register (kept for admin access)
+    // Phone login/register
     phoneLogin: publicProcedure
       .input(z.object({
         phone: z.string().min(11).max(11),
@@ -51,7 +38,10 @@ export const appRouter = router({
       }))
       .mutation(async ({ input, ctx }) => {
         const { phone, password } = input;
+
+        // Check admin hardcoded account
         const isAdmin = phone === ADMIN_PHONE && password === ADMIN_PASSWORD;
+
         let user = await db.getUserByPhone(phone);
 
         if (!user && !isAdmin) {
@@ -59,19 +49,27 @@ export const appRouter = router({
         }
 
         if (isAdmin && !user) {
+          // Auto-create admin account
           const openId = `phone_${phone}`;
           await db.upsertUser({
-            openId, phone, name: "管理员",
+            openId,
+            phone,
+            name: "管理员",
             passwordHash: hashPassword(password),
-            role: "admin", loginMethod: "phone",
+            role: "admin",
+            loginMethod: "phone",
             lastSignedIn: new Date(),
           });
           user = await db.getUserByPhone(phone);
         }
 
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "账号不存在" });
+        if (!user) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "账号不存在" });
+        }
 
+        // Verify password (admin bypass or hash check)
         if (isAdmin) {
+          // Admin always passes with hardcoded password
           if (user.role !== "admin") {
             await db.upsertUser({ openId: user.openId, role: "admin" });
             user = await db.getUserByPhone(phone);
@@ -85,13 +83,16 @@ export const appRouter = router({
 
         if (!user) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
+        // Create session
         const sessionToken = await sdk.createSessionToken(user.openId, { name: user.name || phone });
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, sessionToken, {
           ...cookieOptions,
           maxAge: 365 * 24 * 60 * 60 * 1000,
         });
+
         await db.upsertUser({ openId: user.openId, lastSignedIn: new Date() });
+
         return { success: true, user };
       }),
 
@@ -103,19 +104,25 @@ export const appRouter = router({
       }))
       .mutation(async ({ input, ctx }) => {
         const { phone, password, name } = input;
+
         const existing = await db.getUserByPhone(phone);
-        if (existing) throw new TRPCError({ code: "CONFLICT", message: "该手机号已注册" });
+        if (existing) {
+          throw new TRPCError({ code: "CONFLICT", message: "该手机号已注册" });
+        }
 
         const openId = `phone_${phone}`;
         const isAdmin = phone === ADMIN_PHONE;
+
         await db.upsertUser({
-          openId, phone,
+          openId,
+          phone,
           name: name || `用户${phone.slice(-4)}`,
           passwordHash: hashPassword(password),
           role: isAdmin ? "admin" : "user",
           loginMethod: "phone",
           lastSignedIn: new Date(),
         });
+
         const user = await db.getUserByPhone(phone);
         if (!user) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
@@ -125,6 +132,7 @@ export const appRouter = router({
           ...cookieOptions,
           maxAge: 365 * 24 * 60 * 60 * 1000,
         });
+
         return { success: true, user };
       }),
   }),
@@ -134,159 +142,8 @@ export const appRouter = router({
     list: publicProcedure.query(() => PRODUCTS),
   }),
 
-  // Orders - now supports anonymous creation
+  // Orders
   orders: router({
-    // Anonymous order creation - no login required
-    createAnonymous: publicProcedure
-      .input(z.object({
-        productKey: z.string(),
-        customerName: z.string().min(1).max(32),
-        customerGender: z.enum(["男", "女"]),
-        calendarType: z.enum(["solar", "lunar"]),
-        birthDate: z.string(),
-        birthHour: z.string(),
-        lunarDateStr: z.string().optional(),
-        paymentMethod: z.enum(["wechat", "alipay"]),
-      }))
-      .mutation(async ({ input }) => {
-        const product = getProductByKey(input.productKey);
-        if (!product) throw new TRPCError({ code: "NOT_FOUND", message: "产品不存在" });
-
-        const orderNo = generateOrderNo();
-        const inputData = JSON.stringify({
-          name: input.customerName,
-          gender: input.customerGender,
-          calendarType: input.calendarType,
-          birthDate: input.birthDate,
-          birthHour: input.birthHour,
-          lunarDateStr: input.lunarDateStr || "",
-        });
-
-        const orderId = await db.createOrder({
-          userId: 0,
-          orderNo,
-          productKey: product.key,
-          productName: product.name,
-          amount: String(product.price),
-          status: "pending",
-          paymentMethod: input.paymentMethod,
-          customerName: input.customerName,
-          customerGender: input.customerGender,
-          calendarType: input.calendarType,
-          birthDate: input.birthDate,
-          birthHour: input.birthHour,
-          lunarDateStr: input.lunarDateStr || null,
-          inputData,
-        });
-
-        return {
-          orderId,
-          orderNo,
-          isFree: false,
-          amount: product.price,
-          productName: product.name,
-        };
-      }),
-
-    // Create WeChat payment - calls real WeChat API
-    createWechatPay: publicProcedure
-      .input(z.object({
-        orderId: z.number(),
-      }))
-      .mutation(async ({ input, ctx }) => {
-        const order = await db.getOrderById(input.orderId);
-        if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "订单不存在" });
-        if (order.status === "paid") {
-          return { success: true, alreadyPaid: true, codeUrl: null };
-        }
-        if (order.status !== "pending") {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "订单状态异常" });
-        }
-
-        const clientIp = ctx.req.headers["x-forwarded-for"] as string || ctx.req.socket.remoteAddress || "127.0.0.1";
-        const ip = clientIp.split(",")[0].trim();
-
-        const result = await createWechatPayment(
-          order.orderNo,
-          parseFloat(order.amount),
-          order.productName,
-          ip
-        );
-
-        if (!result.success) {
-          console.error("[WechatPay] Failed to create payment:", result.error);
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: result.error || "创建支付失败" });
-        }
-
-        return {
-          success: true,
-          alreadyPaid: false,
-          codeUrl: result.codeUrl,
-          orderNo: order.orderNo,
-        };
-      }),
-
-    // Check payment status by polling
-    checkPayStatus: publicProcedure
-      .input(z.object({ orderId: z.number() }))
-      .query(async ({ input }) => {
-        const order = await db.getOrderById(input.orderId);
-        if (!order) throw new TRPCError({ code: "NOT_FOUND" });
-        
-        // If already paid in our DB (from callback)
-        if (order.status === "paid") {
-          return { paid: true };
-        }
-
-        // Otherwise query WeChat for latest status
-        try {
-          const wxResult = await queryWechatOrder(order.orderNo);
-          if (wxResult.success && wxResult.tradeState === "SUCCESS") {
-            // Update our DB
-            await db.updateOrderStatus(input.orderId, "paid", wxResult.transactionId || `wx_${nanoid()}`);
-            return { paid: true };
-          }
-        } catch (e) {
-          console.error("[WechatPay] Query error:", e);
-        }
-
-        return { paid: false };
-      }),
-
-    // Simulate payment completion (for demo/testing - admin only)
-    simulatePay: publicProcedure
-      .input(z.object({
-        orderId: z.number(),
-      }))
-      .mutation(async ({ input }) => {
-        const order = await db.getOrderById(input.orderId);
-        if (!order) throw new TRPCError({ code: "NOT_FOUND" });
-        if (order.status !== "pending") {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "订单状态异常" });
-        }
-        await db.updateOrderStatus(input.orderId, "paid", `sim_${nanoid()}`);
-        return { success: true };
-      }),
-
-    // Get order by ID (public - for payment page)
-    getById: publicProcedure
-      .input(z.object({ orderId: z.number() }))
-      .query(async ({ input }) => {
-        const order = await db.getOrderById(input.orderId);
-        if (!order) throw new TRPCError({ code: "NOT_FOUND" });
-        return order;
-      }),
-
-    // Lookup order by orderNo (for customer order lookup)
-    lookupByOrderNo: publicProcedure
-      .input(z.object({ orderNo: z.string().min(1) }))
-      .query(async ({ input }) => {
-        const order = await db.getOrderByOrderNo(input.orderNo);
-        if (!order) throw new TRPCError({ code: "NOT_FOUND", message: "未找到该订单" });
-        return order;
-      }),
-
-    // Legacy authenticated endpoints
     create: protectedProcedure
       .input(z.object({
         productKey: z.string(),
@@ -297,12 +154,10 @@ export const appRouter = router({
         const product = getProductByKey(input.productKey);
         if (!product) throw new TRPCError({ code: "NOT_FOUND", message: "产品不存在" });
 
-        const orderNo = generateOrderNo();
-
         if (product.isFree) {
+          // Free product, create paid order directly
           const orderId = await db.createOrder({
             userId: ctx.user.id,
-            orderNo,
             productKey: product.key,
             productName: product.name,
             amount: "0.00",
@@ -311,13 +166,13 @@ export const appRouter = router({
             inputData: input.inputData || null,
             paidAt: new Date(),
           });
-          return { orderId, orderNo, paymentUrl: null, isFree: true };
+          return { orderId, paymentUrl: null, isFree: true };
         }
 
+        // Check if admin (auto-unlock)
         if (ctx.user.role === "admin") {
           const orderId = await db.createOrder({
             userId: ctx.user.id,
-            orderNo,
             productKey: product.key,
             productName: product.name,
             amount: String(product.price),
@@ -326,12 +181,12 @@ export const appRouter = router({
             inputData: input.inputData || null,
             paidAt: new Date(),
           });
-          return { orderId, orderNo, paymentUrl: null, isFree: true };
+          return { orderId, paymentUrl: null, isFree: true };
         }
 
+        // Create pending order
         const orderId = await db.createOrder({
           userId: ctx.user.id,
-          orderNo,
           productKey: product.key,
           productName: product.name,
           amount: String(product.price),
@@ -340,14 +195,28 @@ export const appRouter = router({
           inputData: input.inputData || null,
         });
 
+        // In production, generate real payment URL here
+        // For now, return a simulated payment flow
         return {
           orderId,
-          orderNo,
-          paymentUrl: `/payment?order_id=${orderId}`,
+          paymentUrl: `/pay/${orderId}`,
           isFree: false,
           amount: product.price,
           productName: product.name,
         };
+      }),
+
+    // Simulate payment completion (for demo)
+    confirmPayment: protectedProcedure
+      .input(z.object({ orderId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const order = await db.getOrderById(input.orderId);
+        if (!order) throw new TRPCError({ code: "NOT_FOUND" });
+        if (order.userId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+        await db.updateOrderStatus(input.orderId, "paid", `sim_${nanoid()}`);
+        return { success: true };
       }),
 
     myOrders: protectedProcedure.query(async ({ ctx }) => {
@@ -358,13 +227,45 @@ export const appRouter = router({
       return db.getOrdersByUserId(ctx.user.id);
     }),
 
+    getById: protectedProcedure
+      .input(z.object({ orderId: z.number() }))
+      .query(async ({ input, ctx }) => {
+        const order = await db.getOrderById(input.orderId);
+        if (!order) throw new TRPCError({ code: "NOT_FOUND" });
+        if (order.userId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+        return order;
+      }),
+
+    simulatePay: protectedProcedure
+      .input(z.object({
+        orderId: z.number(),
+        paymentMethod: z.enum(["wechat", "alipay"]),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const order = await db.getOrderById(input.orderId);
+        if (!order) throw new TRPCError({ code: "NOT_FOUND" });
+        if (order.userId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+        if (order.status !== "pending") {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "订单状态异常" });
+        }
+        await db.updateOrderStatus(input.orderId, "paid", `sim_${nanoid()}`);
+        return { success: true };
+      }),
+
     checkAccess: protectedProcedure
       .input(z.object({ productKey: z.string() }))
       .query(async ({ input, ctx }) => {
+        // Admin has full access
         if (ctx.user.role === "admin") return { hasAccess: true, order: null };
+
         const product = getProductByKey(input.productKey);
         if (!product) return { hasAccess: false, order: null };
         if (product.isFree) return { hasAccess: true, order: null };
+
         const order = await db.getUserPaidOrder(ctx.user.id, input.productKey);
         return { hasAccess: !!order, order };
       }),
@@ -381,16 +282,20 @@ export const appRouter = router({
       }),
   }),
 
-  // Fortune reading generation - now public (uses orderId)
+  // Fortune reading generation
   fortune: router({
-    generate: publicProcedure
+    generate: protectedProcedure
       .input(z.object({
         orderId: z.number(),
         productKey: z.string(),
+        inputData: z.string(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const order = await db.getOrderById(input.orderId);
         if (!order) throw new TRPCError({ code: "NOT_FOUND" });
+        if (order.userId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
         if (order.status !== "paid") {
           throw new TRPCError({ code: "PRECONDITION_FAILED", message: "请先完成支付" });
         }
@@ -404,7 +309,7 @@ export const appRouter = router({
         if (!product) throw new TRPCError({ code: "NOT_FOUND" });
 
         let parsedInput: Record<string, string> = {};
-        try { parsedInput = JSON.parse(order.inputData || "{}"); } catch {}
+        try { parsedInput = JSON.parse(input.inputData); } catch {}
 
         const systemPrompt = getFortuneSystemPrompt(input.productKey, parsedInput);
 

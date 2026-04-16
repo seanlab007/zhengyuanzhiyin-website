@@ -23,31 +23,16 @@ export type InsertUser = typeof users.$inferInsert;
 
 /**
  * Orders table for tracking purchases.
- * userId=0 means anonymous order (no login required).
  */
 export const orders = mysqlTable("orders", {
   id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull().default(0),
-  /** Unique order number for customer lookup */
-  orderNo: varchar("orderNo", { length: 64 }).notNull(),
+  userId: int("userId").notNull(),
   productKey: varchar("productKey", { length: 64 }).notNull(),
   productName: varchar("productName", { length: 128 }).notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   status: mysqlEnum("status", ["pending", "paid", "failed", "refunded"]).default("pending").notNull(),
   paymentMethod: varchar("paymentMethod", { length: 32 }),
   paymentId: varchar("paymentId", { length: 256 }),
-  /** Customer name */
-  customerName: varchar("customerName", { length: 64 }),
-  /** Customer gender */
-  customerGender: varchar("customerGender", { length: 8 }),
-  /** Calendar type: solar or lunar */
-  calendarType: varchar("calendarType", { length: 16 }),
-  /** Birth date string (e.g. 2026-04-16) */
-  birthDate: varchar("birthDate", { length: 32 }),
-  /** Birth hour/shichen (e.g. 丑时) */
-  birthHour: varchar("birthHour", { length: 16 }),
-  /** Lunar date display string */
-  lunarDateStr: varchar("lunarDateStr", { length: 64 }),
   /** JSON string storing the input params for the fortune reading */
   inputData: text("inputData"),
   /** JSON string storing the fortune reading result */

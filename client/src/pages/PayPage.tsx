@@ -99,7 +99,7 @@ export default function PayPage() {
       {/* Pay button */}
       <div className="px-4 mt-8">
         <Button
-          onClick={() => simulatePayMutation.mutate({ orderId })}
+          onClick={() => simulatePayMutation.mutate({ orderId, paymentMethod })}
           disabled={simulatePayMutation.isPending}
           className="w-full h-12 rounded-xl gradient-primary text-white font-semibold text-base shadow-md"
         >

@@ -141,13 +141,6 @@ export async function updateOrderStatus(orderId: number, status: "pending" | "pa
   await db.update(orders).set(updateData).where(eq(orders.id, orderId));
 }
 
-export async function getOrderByOrderNo(orderNo: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(orders).where(eq(orders.orderNo, orderNo)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
-}
-
 export async function updateOrderResult(orderId: number, resultData: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
