@@ -95,7 +95,6 @@
 
 ## 部署计划
 - [ ] 部署合规版本到 zhengyuanzhiyin.com（47.95.118.78）
-- [ ] 部署商业版本到 shenhe.ftjy1.com（等待服务器信息）
 - [ ] 配置SSL证书和HTTPS
 - [ ] 验证微信支付真实收款功能
 
@@ -159,3 +158,4 @@
 - [x] 实现订单与追踪数据关联
 - [x] 创建快手投放链接文档（KUAISHOU_TRACKING.md）
 - [x] 生成投放链接模板：https://zhengyuanzhiyin-cb6tjthv.manus.space/landing?channel=kuaishou&callback=__CALLBACK__&adid=__DID__
+- [x] 修复管理员支付页面自动跳过支付流程
