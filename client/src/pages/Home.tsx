@@ -227,7 +227,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 信息输入表单 - 移到这里 */}
+      {/* 信息输入表单 - 放在8个锁定项目网格下面 */}
       <div ref={formRef} className="px-4 py-4 max-w-md mx-auto">
         <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #fef9f0, #fdf3e7)', border: '2px solid #e8c99b' }}>
           <div className="px-5 py-6 space-y-5">
