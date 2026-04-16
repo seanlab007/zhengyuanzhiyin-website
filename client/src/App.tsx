@@ -10,6 +10,8 @@ import Features from "./pages/Features";
 import Profile from "./pages/Profile";
 import FortuneDetail from "./pages/FortuneDetail";
 import PayPage from "./pages/PayPage";
+import PaymentPage from "./pages/PaymentPage";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import OrderHistory from "./pages/OrderHistory";
 import MobileLayout from "./components/MobileLayout";
 
@@ -22,6 +24,8 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/fortune/:key" component={FortuneDetail} />
       <Route path="/pay/:orderId" component={PayPage} />
+      <Route path="/payment" component={PaymentPage} />
+      <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/orders" component={OrderHistory} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

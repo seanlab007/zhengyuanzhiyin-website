@@ -35,7 +35,8 @@ export default function FortuneDetail() {
           inputData: JSON.stringify(formData),
         });
       } else {
-        navigate(`/pay/${data.orderId}`);
+        // 使用新的支付页面
+        navigate(`/payment?order_id=${data.orderId}`);
       }
     },
     onError: (err) => toast.error(err.message),
@@ -214,7 +215,7 @@ export default function FortuneDetail() {
               if (["name", "fullName", "gender", "birthDate"].includes(field.key)) return null;
               
               return (
-              <div key={field.key}>
+                <div key={field.key}>
                 <label className="text-xs text-muted-foreground mb-1 block">
                   {field.label} {field.required && <span className="text-destructive">*</span>}
                 </label>
@@ -247,8 +248,8 @@ export default function FortuneDetail() {
                   />
                 )}
               </div>
-            );
-            })}
+              );
+              })}
           </div>
           <Button
             onClick={handleSubmit}
