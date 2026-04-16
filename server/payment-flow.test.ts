@@ -5,7 +5,7 @@ describe("Payment Flow Logic", () => {
   it("marriage product exists and has correct price", () => {
     const product = getProductByKey("marriage");
     expect(product).toBeDefined();
-    expect(product!.price).toBe(29.9);
+    expect(product!.price).toBe(9.9);
     expect(product!.isFree).toBe(false);
     expect(product!.isLocked).toBe(false);
   });

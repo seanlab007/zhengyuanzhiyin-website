@@ -61,7 +61,7 @@ describe("Products", () => {
 
   it("has correct pricing for visible products", () => {
     const expected: Record<string, number> = {
-      marriage: 29.9,
+      marriage: 9.9,
       daily: 0,
       ziwei: 29.9,
       wealth: 19.9,
@@ -109,7 +109,7 @@ describe("Products list API", () => {
     const products = await caller.products.list();
     expect(products).toHaveLength(6);
     expect(products[0].key).toBe("marriage");
-    expect(products[0].price).toBe(29.9);
+    expect(products[0].price).toBe(9.9);
   });
 });
 

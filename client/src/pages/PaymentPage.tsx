@@ -12,7 +12,12 @@ export default function PaymentPage() {
   const params = new URLSearchParams(search);
   const orderId = Number(params.get('order_id'));
   const orderNoParam = params.get('order_no') || '';
-  const isAdmin = params.get('admin') === 'true' && params.get('key') === 'admin123';
+  // 从sessionStorage读取管理员状态（优先），如果没有则从URL参数读取
+  const [isAdmin, setIsAdmin] = React.useState(() => {
+    const stored = sessionStorage.getItem('zhengyuan_admin_mode');
+    if (stored === 'true') return true;
+    return params.get('admin') === 'true' && params.get('key') === 'admin123';
+  });
 
   const [payStep, setPayStep] = useState<'info' | 'qrcode' | 'polling' | 'success' | 'failed'>('info');
   const [isAdminSuccess, setIsAdminSuccess] = useState(false);
@@ -51,6 +56,8 @@ export default function PaymentPage() {
   // Auto-mark as paid if admin
   useEffect(() => {
     if (isAdmin && order && order.status === 'pending') {
+      // 确保sessionStorage中有管理员标记
+      sessionStorage.setItem('zhengyuan_admin_mode', 'true');
       simulatePayMutation.mutate({ orderId });
     }
   }, [isAdmin, order?.status, orderId]);

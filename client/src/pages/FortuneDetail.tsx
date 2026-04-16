@@ -37,9 +37,11 @@ export default function FortuneDetail() {
           productKey,
         });
       } else {
-        // 使用新的支付页面，透传管理员参数
-        const adminParams = isAdmin ? '&admin=true&key=admin123' : '';
-        navigate(`/payment?order_id=${data.orderId}${adminParams}`);
+        // 使用新的支付页面，通过sessionStorage传递管理员状态
+        if (isAdmin) {
+          sessionStorage.setItem('zhengyuan_admin_mode', 'true');
+        }
+        navigate(`/payment?order_id=${data.orderId}`);
       }
     },
     onError: (err) => toast.error(err.message),
