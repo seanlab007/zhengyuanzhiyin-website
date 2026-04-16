@@ -164,35 +164,36 @@ export default function Home() {
             {/* 半透明覆盖层 */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
             
-            {/* 表单覆盖在图片中间 */}
-            <div className="absolute top-1/2 left-0 right-0 px-4 py-2 transform -translate-y-1/2">
-              <div ref={formRef} className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #fef9f0, #fdf3e7)', border: '2px solid #e8c99b' }}>
-                <div className="px-4 py-3 space-y-3">
+            {/* 表单覆盖在图片中间 - 不覆盖头部 */}
+            <div className="absolute top-1/2 left-0 right-0 px-3 py-1 transform -translate-y-1/2">
+              {/* 表单 */}
+              <div ref={formRef} className="rounded-2xl overflow-hidden mb-2" style={{ background: 'linear-gradient(135deg, #fef9f0, #fdf3e7)', border: '2px solid #e8c99b' }}>
+                <div className="px-3 py-2 space-y-2">
                   {/* 姓名 */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-red-700 font-bold text-xs whitespace-nowrap min-w-[50px]">您的姓名：</label>
+                  <div className="flex items-center gap-1">
+                    <label className="text-red-700 font-bold text-[11px] whitespace-nowrap min-w-[45px]">您的姓名：</label>
                     <input
                       type="text"
                       placeholder="请输入姓名（汉字）"
                       value={name}
                       onChange={e => setName(e.target.value)}
-                      className="flex-1 bg-transparent border-b border-gray-300 py-1 text-gray-700 text-xs placeholder:text-gray-400 outline-none focus:border-red-400 transition-colors"
+                      className="flex-1 bg-transparent border-b border-gray-300 py-0.5 text-gray-700 text-[11px] placeholder:text-gray-400 outline-none focus:border-red-400 transition-colors"
                     />
                   </div>
 
                   {/* 性别 */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-red-700 font-bold text-xs whitespace-nowrap min-w-[50px]">您的性别：</label>
-                    <div className="flex gap-2">
+                  <div className="flex items-center gap-1">
+                    <label className="text-red-700 font-bold text-[11px] whitespace-nowrap min-w-[45px]">您的性别：</label>
+                    <div className="flex gap-1">
                       <button
                         onClick={() => setGender('男')}
-                        className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all ${gender === '男' ? 'border-red-500 bg-red-50 text-red-600' : 'border-gray-300 bg-white text-gray-500'}`}
+                        className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold transition-all ${gender === '男' ? 'border-red-500 bg-red-50 text-red-600' : 'border-gray-300 bg-white text-gray-500'}`}
                       >
                         男
                       </button>
                       <button
                         onClick={() => setGender('女')}
-                        className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all ${gender === '女' ? 'border-red-500 bg-red-50 text-red-600' : 'border-gray-300 bg-white text-gray-500'}`}
+                        className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold transition-all ${gender === '女' ? 'border-red-500 bg-red-50 text-red-600' : 'border-gray-300 bg-white text-gray-500'}`}
                       >
                         女
                       </button>
@@ -200,11 +201,11 @@ export default function Home() {
                   </div>
 
                   {/* 出生日期 */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-red-700 font-bold text-xs whitespace-nowrap min-w-[50px]">出生日期：</label>
+                  <div className="flex items-center gap-1">
+                    <label className="text-red-700 font-bold text-[11px] whitespace-nowrap min-w-[45px]">出生日期：</label>
                     <button
                       onClick={() => setShowDatePicker(true)}
-                      className="flex-1 bg-transparent border-b border-gray-300 py-1 text-left text-xs outline-none"
+                      className="flex-1 bg-transparent border-b border-gray-300 py-0.5 text-left text-[11px] outline-none"
                     >
                       {birthDisplay ? (
                         <span className="text-gray-700">{birthDisplay}</span>
@@ -215,57 +216,52 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+              
+              {/* 立即测算按预 */}
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="w-full py-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-800 font-bold text-sm hover:from-yellow-500 hover:to-orange-500 disabled:opacity-50 transition-all shadow-lg mb-1"
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center justify-center gap-1">
+                    <Loader2 size={14} className="animate-spin" />
+                    处理中...
+                  </span>
+                ) : (
+                  '立即测算'
+                )}
+              </button>
+              
+              {/* 隐私协议 */}
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <button
+                  onClick={() => setAgreePrivacy(!agreePrivacy)}
+                  className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+                    agreePrivacy ? 'border-red-500 bg-red-500' : 'border-gray-400'
+                  }`}
+                >
+                  {agreePrivacy && <span className="text-white text-[6px]">✓</span>}
+                </button>
+                <span className="text-gray-400 text-[10px]">
+                  同意《<span className="text-blue-400">用户隐私协议</span>》
+                </span>
+              </div>
+              
+              {/* 查询订单 */}
+              <div className="text-center">
+                <button
+                  onClick={() => navigate('/orders')}
+                  className="text-blue-400 text-[10px] underline"
+                >
+                  查询我的订单 &gt;
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-
-
-      {/* 立即测算按钮 - 突出显示 */}
-      <div className="px-4 py-3 max-w-md mx-auto">
-        <button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="w-full py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-800 font-bold text-lg hover:from-yellow-500 hover:to-orange-500 disabled:opacity-50 transition-all shadow-lg"
-        >
-          {isSubmitting ? (
-            <span className="flex items-center justify-center gap-2">
-              <Loader2 size={20} className="animate-spin" />
-              处理中...
-            </span>
-          ) : (
-            '立即测算'
-          )}
-        </button>
-      </div>
-
-      {/* 隐私协议 */}
-      <div className="px-4 py-2 max-w-md mx-auto">
-        <div className="flex items-center justify-center gap-2">
-          <button
-            onClick={() => setAgreePrivacy(!agreePrivacy)}
-            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-              agreePrivacy ? 'border-red-500 bg-red-500' : 'border-gray-400'
-            }`}
-          >
-            {agreePrivacy && <span className="text-white text-[8px]">✓</span>}
-          </button>
-          <span className="text-gray-400 text-xs">
-            同意《<span className="text-blue-400">用户隐私协议</span>》
-          </span>
-        </div>
-      </div>
-
-      {/* 查询订单链接 */}
-      <div className="px-4 py-2 max-w-md mx-auto text-center">
-        <button
-          onClick={() => navigate('/orders')}
-          className="text-blue-400 text-xs underline"
-        >
-          查询我的订单 &gt;
-        </button>
-      </div>
 
       {/* 底部信息 - 紧凑排列 */}
       <div className="px-4 py-3 max-w-md mx-auto text-center space-y-1 border-t border-gray-800/50 mt-2">
