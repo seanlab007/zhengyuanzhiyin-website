@@ -33,7 +33,6 @@ export default function FortuneDetail() {
         generateMutation.mutate({
           orderId: data.orderId,
           productKey,
-          inputData: JSON.stringify(formData),
         });
       } else {
         // 使用新的支付页面
