@@ -35,42 +35,37 @@ export default function Home() {
   const coreModules = [
     {
       icon: '💫',
-      title: '解析个人性格对感情的影响',
-      color: 'from-pink-500/20 to-rose-500/10',
-      borderColor: 'border-pink-400/30',
-      titleColor: 'text-pink-300',
+      title: '婚前性格',
+      borderColor: 'border-red-500/50',
+      titleColor: 'text-yellow-300',
       items: ['分析你潜在吸引异性的个人魅力', '如何经营幸福稳定的婚姻生活？', '分析哪些因素对你的感情不利'],
     },
     {
       icon: '🌸',
       title: '探索婚姻成长方向',
-      color: 'from-fuchsia-500/20 to-pink-500/10',
-      borderColor: 'border-fuchsia-400/30',
-      titleColor: 'text-fuchsia-300',
+      borderColor: 'border-pink-500/50',
+      titleColor: 'text-pink-300',
       items: ['解析你的姻缘情况', '了解你的择偶倾向与感情特质', '专业点评适合你的婚配对象'],
     },
     {
       icon: '👑',
       title: '你的婚姻格局',
-      color: 'from-amber-500/20 to-orange-500/10',
-      borderColor: 'border-amber-400/30',
-      titleColor: 'text-amber-300',
+      borderColor: 'border-red-500/50',
+      titleColor: 'text-yellow-300',
       items: ['婚姻对象的条件和特征', '婚后感情生活分析', '根据伴侣性格和谐相处的技巧'],
     },
     {
       icon: '🔑',
       title: '你最应了解的婚配要点',
-      color: 'from-rose-500/20 to-red-500/10',
-      borderColor: 'border-rose-400/30',
-      titleColor: 'text-rose-300',
+      borderColor: 'border-red-500/50',
+      titleColor: 'text-red-300',
       items: ['你适合早婚还是晚婚？', '守护婚姻长期亲密的策略', '老师专业点评适合你的婚配对象！'],
     },
     {
       icon: '🎁',
       title: '2026年爱情幸福秘箱',
-      color: 'from-violet-500/20 to-purple-500/10',
-      borderColor: 'border-violet-400/30',
-      titleColor: 'text-violet-300',
+      borderColor: 'border-red-500/50',
+      titleColor: 'text-orange-300',
       items: ['我要拍拖', '我要提升人缘', '我要爱情更加甜蜜', '防止爱人变心！'],
     },
   ];
@@ -306,7 +301,7 @@ export default function Home() {
       </div>
 
       {/* 核心卖点模块 */}
-      <div className="px-4 py-3 max-w-md mx-auto space-y-3">
+      <div className="px-4 py-6 max-w-md mx-auto space-y-3" style={{ background: 'linear-gradient(135deg, rgba(40,20,50,0.8), rgba(30,15,40,0.9))' }}>
         <div className="text-center mb-1">
           <div className="inline-flex items-center gap-2 mb-1">
             <Sparkles size={12} className="text-pink-400" />
@@ -318,7 +313,7 @@ export default function Home() {
         {coreModules.map((mod, idx) => (
           <div
             key={idx}
-            className={`rounded-2xl overflow-hidden border ${mod.borderColor}`}
+            className={`rounded-2xl overflow-hidden border-2 ${mod.borderColor}`}
             style={{ background: 'rgba(255,255,255,0.04)' }}
           >
             <div className="px-4 py-3">
@@ -334,6 +329,45 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
+              {/* 立即解锁按钮 */}
+              <button
+                onClick={() => {
+                  if (!name.trim()) {
+                    toast.error('请先输入姓名');
+                    return;
+                  }
+                  if (!birthData) {
+                    toast.error('请先选择出生日期');
+                    return;
+                  }
+                  setIsSubmitting(true);
+                  // 创建订单后跳转到支付页面
+                  createOrderMutation.mutate({
+                    productKey: 'marriage-analysis',
+                    customerName: name,
+                    customerGender: gender,
+                    calendarType: birthData.calendarType,
+                    birthDate: `${birthData.year}-${String(birthData.month).padStart(2, '0')}-${String(birthData.day).padStart(2, '0')}`,
+                    birthHour: birthData.hour,
+                    paymentMethod: 'wechat',
+                    lunarDateStr: birthData.displayStr,
+                  });
+                }}
+                disabled={isSubmitting}
+                className="w-full mt-3 py-2 rounded-full bg-gradient-to-r from-pink-400 to-rose-400 text-white font-bold text-sm hover:from-pink-500 hover:to-rose-500 disabled:opacity-50 transition-all shadow-lg flex items-center justify-center gap-2 border-2 border-dashed border-pink-300"
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center justify-center gap-1">
+                    <Loader2 size={14} className="animate-spin" />
+                    处理中...
+                  </span>
+                ) : (
+                  <>
+                    <Lock size={14} />
+                    立即解锁
+                  </>
+                )}
+              </button>
             </div>
           </div>
         ))}
