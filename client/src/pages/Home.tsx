@@ -127,7 +127,7 @@ export default function Home() {
     }
 
     createOrderMutation.mutate({
-      productKey: 'marriage-analysis',
+      productKey: 'marriage',
       customerName: name,
       customerGender: gender,
       calendarType: birthData.calendarType,
@@ -343,7 +343,7 @@ export default function Home() {
                   setIsSubmitting(true);
                   // 创建订单后跳转到支付页面
                   createOrderMutation.mutate({
-                    productKey: 'marriage-analysis',
+                    productKey: 'marriage',
                     customerName: name,
                     customerGender: gender,
                     calendarType: birthData.calendarType,

@@ -181,3 +181,9 @@
 - [x] 立即解锁按钮点击创建订单并跳转到支付页面
 - [x] 修复立即解锁按钮的product参数问题
 - [x] 所有51个测试通过
+
+## 修复productKey不匹配问题
+- [x] 修复立即测算按钮的productKey从'marriage-analysis'改为'marriage'
+- [x] 修复立即解锁按钮的productKey从'marriage-analysis'改为'marriage'
+- [x] 所有51个测试通过
+- [x] 完整的算命流程恢复正常
