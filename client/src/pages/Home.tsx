@@ -1,6 +1,7 @@
 import React from 'react';
-import { useLocation } from 'wouter';
-import { Heart, Star, Zap } from 'lucide-react';
+import { useLocation, Link } from 'wouter';
+import { Heart, Star, Zap, Lock, ChevronRight, Shield, Users } from 'lucide-react';
+import { PRODUCTS } from '@shared/products';
 
 export default function Home() {
   const [, navigate] = useLocation();
@@ -14,209 +15,256 @@ export default function Home() {
   }, []);
 
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    const mm = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+    const ss = String(seconds % 60).padStart(2, '0');
+    const hh = String(Math.floor(seconds / 3600)).padStart(2, '0');
+    return `${hh}:${mm}:${ss}`;
   };
 
-  const handleUnlock = () => {
-    navigate('/payment?order_id=1');
-  };
+  const handleUnlock = () => navigate('/payment?order_id=1');
+
+  const coreModules = [
+    {
+      icon: '💫',
+      title: '解析个人性格对感情的影响',
+      items: ['分析你潜在吸引异性的个人魅力', '如何经营幸福稳定的婚姻生活？', '分析哪些因素对你的感情不利'],
+    },
+    {
+      icon: '🌸',
+      title: '探索婚姻成长方向',
+      items: ['解析你的姻缘情况', '了解你的择偶倾向与感情特质', '专业点评适合你的婚配对象'],
+    },
+    {
+      icon: '👑',
+      title: '你的婚姻格局',
+      items: ['婚姻对象的条件和特征', '婚后感情生活分析', '根据伴侣性格和谐相处的技巧'],
+    },
+    {
+      icon: '🔑',
+      title: '你最应了解的婚配要点',
+      items: ['你适合早婚还是晚婚？', '守护婚姻长期亲密的策略', '老师专业点评适合你的婚配对象！'],
+    },
+    {
+      icon: '🎁',
+      title: '2026年爱情幸福秘箱',
+      items: ['我要拍拖', '我要提升人缘', '我要爱情更加甜蜜', '防止爱人变心！'],
+    },
+  ];
+
+  const lockedProducts = PRODUCTS.filter(p => p.isLocked);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-900 via-red-800 to-red-900">
-      {/* 顶部装饰和标题 */}
-      <div className="relative pt-8 pb-12 px-4">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-32 h-32 bg-yellow-300 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-40 h-40 bg-pink-300 rounded-full blur-3xl"></div>
-        </div>
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #1a0a0a 0%, #2d0f0f 30%, #1a0a0a 100%)' }}>
 
-        <div className="relative text-center mb-8">
-          <h1 className="text-4xl font-bold text-yellow-300 mb-2">姻缘测试</h1>
-          <p className="text-yellow-100 text-sm">恋爱波折 | 爱情秘籍 | 婚姻分析</p>
-        </div>
+      {/* Hero Banner */}
+      <div className="relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #8b1a1a 0%, #c0392b 40%, #8b1a1a 100%)' }}>
+        {/* 装饰纹理 */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: 'radial-gradient(circle at 20% 50%, #ffd700 1px, transparent 1px), radial-gradient(circle at 80% 50%, #ffd700 1px, transparent 1px)',
+          backgroundSize: '60px 60px'
+        }} />
+        {/* 顶部金色光晕 */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 opacity-30" style={{ background: 'radial-gradient(ellipse, #ffd700 0%, transparent 70%)' }} />
 
-        <div className="relative max-w-md mx-auto mb-8">
-          <div className="bg-gradient-to-b from-orange-200 to-pink-200 rounded-full w-32 h-40 mx-auto flex items-center justify-center shadow-lg">
-            <div className="text-center">
-              <Heart size={48} className="text-red-600 mx-auto mb-2" />
-              <p className="text-red-900 font-bold text-sm">姻缘测试</p>
-            </div>
+        <div className="relative z-10 px-5 pt-10 pb-12 text-center max-w-md mx-auto">
+          {/* 金色装饰线 */}
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-yellow-400 opacity-60" />
+            <span className="text-yellow-400 text-xs tracking-widest font-medium">姻 缘 测 试</span>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-yellow-400 opacity-60" />
           </div>
-        </div>
 
-        <div className="max-w-md mx-auto bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-4 mb-8 border border-yellow-200">
-          <p className="text-center text-yellow-100 text-sm mb-2">已为1576576人提供姻缘分析</p>
-          <p className="text-center text-yellow-300 font-bold text-lg">97.8%的用户对分析结果非常满意！</p>
-        </div>
-      </div>
+          <h1 className="text-5xl font-bold mb-2" style={{ color: '#ffd700', textShadow: '0 2px 20px rgba(255,215,0,0.4)' }}>
+            姻缘测试
+          </h1>
+          <p className="text-red-200 text-sm tracking-widest mb-8">恋爱波折 · 爱情秘籍 · 婚姻分析</p>
 
-      {/* 核心卖点模块 - 5个主要内容区 */}
-      <div className="max-w-md mx-auto px-4 space-y-4 mb-8">
-        {/* 模块1: 个人性格对感情的影响 */}
-        <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
-          <h3 className="text-center text-base font-bold text-red-900 mb-3">解析个人性格对感情的影响</h3>
-          <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 分析你潜在吸引异性的个人魅力</p>
-            <p className="text-gray-800">• 如何经营幸福稳定的婚姻生活？</p>
-            <p className="text-gray-800">• 分析哪些因素对你的感情不利</p>
-          </div>
-          <button
-            onClick={handleUnlock}
-            className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all"
-          >
-            🔓 立即解锁
-          </button>
-        </div>
-
-        {/* 模块2: 婚姻成长方向 */}
-        <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
-          <h3 className="text-center text-base font-bold text-red-900 mb-3">探索婚姻成长方向</h3>
-          <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 解析你的姻缘情况</p>
-            <p className="text-gray-800">• 了解你的择偶倾向与感情特质</p>
-            <p className="text-gray-800">• 专业点评适合你的婚配对象</p>
-          </div>
-          <button
-            onClick={handleUnlock}
-            className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all"
-          >
-            🔓 立即解锁
-          </button>
-        </div>
-
-        {/* 模块3: 你的婚姻格局 */}
-        <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
-          <h3 className="text-center text-base font-bold text-red-900 mb-3">你的婚姻格局</h3>
-          <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 婚姻对象的条件和特征</p>
-            <p className="text-gray-800">• 婚后感情生活分析</p>
-            <p className="text-gray-800">• 根据伴侣性格和谐相处的技巧</p>
-          </div>
-          <button
-            onClick={handleUnlock}
-            className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all"
-          >
-            🔓 立即解锁
-          </button>
-        </div>
-
-        {/* 模块4: 你最应了解的婚配要点 */}
-        <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
-          <h3 className="text-center text-base font-bold text-red-900 mb-3">你最应了解的婚配要点</h3>
-          <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 你适合早婚还是晚婚？</p>
-            <p className="text-gray-800">• 守护婚姻长期亲密的策略</p>
-            <p className="text-gray-800">• 老师专业点评适合你的婚配对象！</p>
-          </div>
-          <button
-            onClick={handleUnlock}
-            className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all"
-          >
-            🔓 立即解锁
-          </button>
-        </div>
-
-        {/* 模块5: 2026年爱情幸福秘箱 */}
-        <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
-          <h3 className="text-center text-base font-bold text-red-900 mb-3">2026年爱情幸福秘箱</h3>
-          <div className="bg-white rounded-lg p-3 space-y-2 text-sm mb-3">
-            <p className="text-gray-800">• 我要拍拖</p>
-            <p className="text-gray-800">• 我要提升人缘</p>
-            <p className="text-gray-800">• 我要爱情更加甜蜜</p>
-            <p className="text-gray-800">• 防止爱人变心！</p>
-          </div>
-          <button
-            onClick={handleUnlock}
-            className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-red-900 font-bold py-2 px-4 rounded-lg text-sm transition-all"
-          >
-            🔓 立即解锁
-          </button>
-        </div>
-      </div>
-
-      {/* 价格和支付区域 */}
-      <div className="max-w-md mx-auto px-4 mb-8">
-        <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
-          <div className="text-center mb-4">
-            <div className="inline-block bg-red-600 text-yellow-100 px-4 py-2 rounded-lg mb-2">
-              <p className="text-xs font-semibold">限时特惠：</p>
-              <p className="text-2xl font-bold">¥29.9</p>
-            </div>
-            <p className="text-sm text-gray-600 line-through">原价：¥79.9</p>
-            <div className="mt-3 flex items-center justify-center gap-2">
-              <Zap size={16} className="text-red-600" />
-              <p className="text-sm font-bold text-red-600">距优惠结束 {formatTime(timeLeft)}</p>
+          {/* 核心图标 */}
+          <div className="relative w-28 h-28 mx-auto mb-8">
+            <div className="absolute inset-0 rounded-full opacity-30 animate-pulse" style={{ background: 'radial-gradient(circle, #ffd700, transparent)' }} />
+            <div className="relative w-28 h-28 rounded-full flex items-center justify-center border-2 border-yellow-400 border-opacity-50" style={{ background: 'linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,100,100,0.15))' }}>
+              <Heart size={52} className="text-yellow-400" fill="rgba(255,215,0,0.3)" />
             </div>
           </div>
 
-          <p className="text-center text-xs text-gray-700 mb-4 font-semibold">
-            本测试为29.9元付费测试，付费后直接查看答案
-          </p>
-
-          <button
-            onClick={handleUnlock}
-            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-lg text-base transition-all flex items-center justify-center gap-2"
-          >
-            ✓ 微信支付
-          </button>
-
-          <button
-            onClick={handleUnlock}
-            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg text-base transition-all mt-2 flex items-center justify-center gap-2"
-          >
-            ✓ 支付宝支付
-          </button>
-        </div>
-      </div>
-
-      {/* 免费功能 - 每日运势 */}
-      <div className="max-w-md mx-auto px-4 mb-8">
-        <div className="bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg p-4 shadow-lg border-2 border-purple-300">
-          <div className="text-center mb-4">
-            <Star size={32} className="text-white mx-auto mb-2" />
-            <h3 className="text-lg font-bold text-white mb-2">每日运势 - 免费</h3>
-            <p className="text-sm text-white mb-4">每日运势贴心提醒，开启美好一天</p>
-          </div>
-          <button
-            onClick={() => navigate('/fortune/daily')}
-            className="w-full bg-white text-purple-600 font-bold py-2 px-4 rounded-lg text-sm transition-all hover:bg-gray-100"
-          >
-            ✨ 查看今日运势
-          </button>
-        </div>
-      </div>
-
-      {/* 安全和信息说明 */}
-      <div className="max-w-md mx-auto px-4 mb-8">
-        <div className="bg-yellow-100 rounded-lg p-4 shadow-lg border-2 border-yellow-300">
-          <div className="text-center space-y-2 text-xs text-gray-800">
-            <p className="font-semibold">支付系统已经经过安全联盟认证请放心使用</p>
-            <hr className="border-yellow-300" />
-            <p className="font-semibold text-red-900">测试结果/算法来自于专业老师团队</p>
-            <p className="text-gray-700">该测试为29.9元起付费测试，测试结果将直接以网页形式呈现</p>
-            <p className="text-gray-700">测试结果仅供参考及该测试为付费幸福指数测试</p>
+          {/* 数据统计 */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl p-3 border border-yellow-400 border-opacity-30" style={{ background: 'rgba(255,215,0,0.08)' }}>
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <Users size={14} className="text-yellow-400" />
+                <span className="text-yellow-400 text-xs font-medium">服务人数</span>
+              </div>
+              <p className="text-white font-bold text-lg">1,576,576</p>
+            </div>
+            <div className="rounded-xl p-3 border border-yellow-400 border-opacity-30" style={{ background: 'rgba(255,215,0,0.08)' }}>
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <Star size={14} className="text-yellow-400" fill="currentColor" />
+                <span className="text-yellow-400 text-xs font-medium">用户满意度</span>
+              </div>
+              <p className="text-white font-bold text-lg">97.8%</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 页脚 - 客服入口 */}
-      <div className="max-w-md mx-auto px-4 pb-8 text-center">
-        <p className="text-yellow-100 text-xs mb-2">如需帮助点此</p>
-        <button className="text-yellow-300 hover:text-yellow-200 font-semibold text-sm underline">
-          请联系专属售后客服
-        </button>
-        <div className="mt-4 flex justify-center gap-4">
-          <div className="bg-white bg-opacity-20 rounded px-2 py-1">
-            <p className="text-yellow-100 text-xs font-bold">诚信网站</p>
+      {/* 核心卖点模块 */}
+      <div className="px-4 py-8 max-w-2xl mx-auto space-y-4">
+        <div className="text-center mb-6">
+          <p className="text-yellow-400 text-xs tracking-widest mb-1">付费后获取完整报告</p>
+          <h2 className="text-white text-xl font-bold">你的姻缘分析报告包含</h2>
+        </div>
+
+        {coreModules.map((mod, idx) => (
+          <div
+            key={idx}
+            className="rounded-2xl overflow-hidden border border-opacity-20 border-yellow-400"
+            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,215,0,0.03))' }}
+          >
+            <div className="px-5 py-4">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-2xl">{mod.icon}</span>
+                <h3 className="text-yellow-300 font-bold text-base">{mod.title}</h3>
+              </div>
+              <div className="space-y-2 mb-4 pl-2">
+                {mod.items.map((item, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="text-yellow-500 text-xs mt-1">▸</span>
+                    <p className="text-gray-300 text-sm leading-relaxed">{item}</p>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={handleUnlock}
+                className="w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #c0392b, #e74c3c)', color: '#ffd700', boxShadow: '0 4px 15px rgba(192,57,43,0.4)' }}
+              >
+                🔓 立即解锁
+              </button>
+            </div>
           </div>
-          <div className="bg-white bg-opacity-20 rounded px-2 py-1">
-            <p className="text-yellow-100 text-xs font-bold">可信网站</p>
+        ))}
+      </div>
+
+      {/* 价格区域 */}
+      <div className="px-4 pb-8 max-w-2xl mx-auto">
+        <div className="rounded-3xl overflow-hidden border border-yellow-400 border-opacity-30" style={{ background: 'linear-gradient(135deg, rgba(255,215,0,0.08), rgba(192,57,43,0.08))' }}>
+          <div className="px-6 py-8">
+            {/* 价格展示 */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-baseline gap-2 mb-2">
+                <span className="text-gray-400 text-sm line-through">¥79.9</span>
+                <span className="text-yellow-400 text-xs font-medium px-2 py-0.5 rounded-full border border-yellow-400 border-opacity-50">限时特惠</span>
+              </div>
+              <div className="text-6xl font-black text-white mb-1">
+                <span className="text-2xl text-yellow-400">¥</span>29.9
+              </div>
+              <p className="text-gray-400 text-sm">付费后直接查看完整分析报告</p>
+            </div>
+
+            {/* 倒计时 */}
+            <div className="flex items-center justify-center gap-3 mb-6 p-3 rounded-xl" style={{ background: 'rgba(255,0,0,0.1)', border: '1px solid rgba(255,0,0,0.2)' }}>
+              <Zap size={16} className="text-red-400" />
+              <span className="text-red-300 text-sm font-medium">距优惠结束</span>
+              <span className="text-white font-mono font-bold text-lg">{formatTime(timeLeft)}</span>
+            </div>
+
+            {/* 支付按钮 */}
+            <div className="space-y-3">
+              <button
+                onClick={handleUnlock}
+                className="w-full py-4 rounded-2xl font-bold text-white text-base transition-all duration-200 active:scale-95 flex items-center justify-center gap-3"
+                style={{ background: 'linear-gradient(135deg, #07c160, #06ad56)', boxShadow: '0 6px 20px rgba(7,193,96,0.4)' }}
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.5 13c1.933 0 3.5-1.567 3.5-3.5S10.433 6 8.5 6 5 7.567 5 9.5 6.567 13 8.5 13zm6-6h5v1h-5zm0 3h5v1h-5zm0 3h5v1h-5z"/></svg>
+                微信支付
+              </button>
+              <button
+                onClick={handleUnlock}
+                className="w-full py-4 rounded-2xl font-bold text-white text-base transition-all duration-200 active:scale-95 flex items-center justify-center gap-3"
+                style={{ background: 'linear-gradient(135deg, #1677ff, #0958d9)', boxShadow: '0 6px 20px rgba(22,119,255,0.4)' }}
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                支付宝支付
+              </button>
+            </div>
+
+            {/* 安全说明 */}
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <Shield size={14} className="text-gray-500" />
+              <p className="text-gray-500 text-xs">支付系统已通过安全联盟认证，请放心使用</p>
+            </div>
           </div>
-          <div className="bg-white bg-opacity-20 rounded px-2 py-1">
-            <p className="text-yellow-100 text-xs font-bold">360</p>
+        </div>
+      </div>
+
+      {/* 免费每日运势 */}
+      <div className="px-4 pb-8 max-w-2xl mx-auto">
+        <div className="rounded-2xl overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #4a1a8a, #7b2d8b)' }}>
+          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 70% 30%, #fff 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+          <div className="relative px-6 py-6 flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Star size={18} className="text-yellow-400" fill="currentColor" />
+                <h3 className="text-white font-bold text-lg">每日运势</h3>
+                <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full font-medium">免费</span>
+              </div>
+              <p className="text-purple-200 text-sm">每日运势贴心提醒，开启美好一天</p>
+            </div>
+            <button
+              onClick={() => navigate('/fortune/daily')}
+              className="flex-shrink-0 bg-white text-purple-700 font-bold py-2 px-4 rounded-xl text-sm transition-all active:scale-95 shadow-lg"
+            >
+              查看 →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 其他待解锁功能 */}
+      <div className="px-4 pb-8 max-w-2xl mx-auto">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-px flex-1 bg-gray-700" />
+          <h2 className="text-gray-400 text-sm font-medium whitespace-nowrap flex items-center gap-2">
+            <Lock size={14} />
+            更多功能（待解锁）
+          </h2>
+          <div className="h-px flex-1 bg-gray-700" />
+        </div>
+        <div className="space-y-2">
+          {lockedProducts.map((product) => (
+            <div
+              key={product.key}
+              className="rounded-xl p-4 flex items-center gap-3 border border-gray-800 opacity-60"
+              style={{ background: 'rgba(255,255,255,0.03)' }}
+            >
+              <div className="text-2xl">{product.icon}</div>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-gray-300 text-sm">{product.name}</h4>
+                <p className="text-xs text-gray-600 truncate">{product.description}</p>
+              </div>
+              <span className="text-xs text-gray-600 flex items-center gap-1 flex-shrink-0">
+                <Lock size={11} />
+                待解锁
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 页脚 */}
+      <div className="border-t border-gray-800 py-8 px-4">
+        <div className="max-w-2xl mx-auto text-center space-y-3">
+          <button className="text-blue-400 hover:text-blue-300 text-sm underline">
+            联系专属售后客服
+          </button>
+          <div className="flex justify-center gap-3">
+            {['诚信网站', '可信网站', '360安全'].map(label => (
+              <span key={label} className="text-xs text-gray-600 border border-gray-700 rounded px-2 py-1">{label}</span>
+            ))}
+          </div>
+          <div className="space-y-1">
+            <p className="text-gray-600 text-xs">苏州费汀娜教育科技有限公司</p>
+            <p className="text-gray-700 text-xs">苏ICP备2021048491号-4</p>
           </div>
         </div>
       </div>
