@@ -56,7 +56,7 @@
 - [x] 创建部署包（ 3.7MB）
 - [x] 部署到Manus平台
 - [ ] 部署到阿里云服务器（ 47.95.118.78）
-- [ ] 配置 www.zhengyuanzhiyin.com 域名 DNS
+- [ ] 配置 shenhe.ftjy1.com 域名 DNS
 - [ ] 验证部署并测试功能
 
 ## UI修改
