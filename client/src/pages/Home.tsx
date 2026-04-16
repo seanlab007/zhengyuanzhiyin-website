@@ -155,7 +155,7 @@ export default function Home() {
           <p className="text-gray-400 text-sm mb-6">恋爱婚姻 · 爱情秘籍 · 婚姻分析</p>
           
           {/* Hero Image */}
-          <div className="relative mb-4 rounded-3xl overflow-hidden border-4 border-yellow-400/50 shadow-2xl">
+          <div className="relative mb-0 rounded-3xl overflow-hidden border-4 border-yellow-400/50 shadow-2xl">
             <img 
               src={HERO_IMG} 
               alt="Marriage Test" 
@@ -163,16 +163,6 @@ export default function Home() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
-
-          {/* Stats */}
-          <div className="rounded-2xl bg-pink-900/30 border border-pink-400/30 px-4 py-3 mb-4">
-            <p className="text-white text-sm font-semibold mb-1">👥 已为 1,576,576 人提供姻缘分析</p>
-            <p className="text-gray-300 text-xs">97.8%的用户对分析结果非常满意！</p>
-          </div>
-
-          <p className="text-center text-gray-400 text-xs mb-4">
-            想作为生活、工作之指导。平台产品拒绝向未成年人提供服务，如未成年人请自行离开。
-          </p>
         </div>
       </div>
 
