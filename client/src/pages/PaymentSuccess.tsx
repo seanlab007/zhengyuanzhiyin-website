@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { CheckCircle2, Download, Share2, Home } from 'lucide-react';
+import { CheckCircle2, Download, Share2, Home, MessageCircle } from 'lucide-react';
+import { WechatQRButton } from '@/components/WechatQR';
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
@@ -167,6 +168,9 @@ export default function PaymentSuccess() {
           </button>
         </p>
       </div>
+
+      {/* 企业微信客服浮动按钮 */}
+      <WechatQRButton />
     </div>
   );
 }
