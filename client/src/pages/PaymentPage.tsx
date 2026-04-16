@@ -7,18 +7,30 @@ import { trpc } from '@/lib/trpc';
 
 export default function PaymentPage() {
   const [searchParams] = useSearchParams();
-  const orderId = parseInt(searchParams.get('order_id') || '0', 10);
+  const orderId = parseInt(searchParams.get('order_id') || '1', 10);
   
   const [timeLeft, setTimeLeft] = useState(1203); // 20:03
   const [paymentMethod, setPaymentMethod] = useState<'wechat' | 'alipay' | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
 
+  // 模拟订单数据
+  const mockOrder = {
+    id: orderId,
+    amount: '29.9',
+    productKey: 'marriage',
+    status: 'pending',
+    createdAt: new Date(),
+  };
+
   // 获取订单详情
   const { data: order, isLoading: orderLoading } = trpc.orders.getById.useQuery(
     { orderId },
     { enabled: orderId > 0 }
   );
+
+  // 使用真实数据或模拟数据
+  const finalOrder = order || mockOrder;
 
   // 模拟支付mutation
   const simulatePayMutation = trpc.orders.simulatePay.useMutation();
@@ -90,7 +102,7 @@ export default function PaymentPage() {
     );
   }
 
-  if (!order) {
+  if (!finalOrder) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-red-900 via-red-800 to-red-900 flex items-center justify-center">
         <div className="text-center max-w-md px-4">
@@ -279,9 +291,9 @@ export default function PaymentPage() {
           <div className="text-center mb-4">
             <div className="inline-block bg-red-600 text-yellow-100 px-4 py-2 rounded-lg mb-2">
               <p className="text-xs font-semibold">限时特惠：</p>
-              <p className="text-2xl font-bold">¥{order.amount}</p>
+              <p className="text-2xl font-bold">¥{finalOrder.amount}</p>
             </div>
-            <p className="text-sm text-gray-600 line-through">原价：¥{(parseFloat(order.amount) * 2.67).toFixed(1)}</p>
+            <p className="text-sm text-gray-600 line-through">原价：¥{(parseFloat(finalOrder.amount) * 2.67).toFixed(1)}</p>
           </div>
 
           {/* 倒计时 */}
@@ -294,7 +306,7 @@ export default function PaymentPage() {
 
           {/* 支付提示 */}
           <p className="text-center text-xs text-gray-700 mb-4 font-semibold">
-            本测试为{order.amount}元付费测试，付费后直接查看答案
+            本测试为{finalOrder.amount}元付费测试，付费后直接查看答案
           </p>
 
           {/* 支付方式 */}
@@ -405,7 +417,7 @@ export default function PaymentPage() {
             <p className="font-semibold">支付系统已经经过安全联盟认证请放心使用</p>
             <hr className="border-yellow-300" />
             <p className="font-semibold text-red-900">测试结果/算法来自于专业老师团队</p>
-            <p className="text-gray-700">该测试为{order.amount}元起付费测试，测试结果将直接以网页形式呈现</p>
+            <p className="text-gray-700">该测试为{finalOrder.amount}元起付费测试，测试结果将直接以网页形式呈现</p>
             <p className="text-gray-700">测试结果仅供参考及该测试为付费幸福指数测试</p>
           </div>
         </div>
