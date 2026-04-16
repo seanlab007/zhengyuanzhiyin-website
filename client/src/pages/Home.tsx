@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'wouter';
-import { Heart, Star, Zap, Lock, Shield, Users, Sparkles } from 'lucide-react';
+import { Heart, Star, Zap, Lock, Shield, Users, Sparkles, Loader2 } from 'lucide-react';
 import { PRODUCTS } from '@shared/products';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { getLoginUrl } from '@/const';
+import { trpc } from '@/lib/trpc';
+import { toast } from 'sonner';
 
 const HERO_IMG = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663494601131/cb6tJthVaUMYyF2mL5LVPm/marriage-hero-bg-9eGPiLxodHioWaYizX3qxd.webp';
 
 export default function Home() {
   const [, navigate] = useLocation();
+  const { user, isAuthenticated } = useAuth();
   const [timeLeft, setTimeLeft] = React.useState(72063); // ~20 hours
+  const [isPayLoading, setIsPayLoading] = useState(false);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -23,7 +29,39 @@ export default function Home() {
     return `${hh}:${mm}:${ss}`;
   };
 
-  const handleUnlock = () => navigate('/payment?order_id=1');
+  const createOrderMutation = trpc.orders.create.useMutation({
+    onSuccess: (data) => {
+      setIsPayLoading(false);
+      if (data.isFree) {
+        toast.success('已解锁！');
+        navigate(`/fortune/marriage`);
+      } else {
+        navigate(`/payment?order_id=${data.orderId}`);
+      }
+    },
+    onError: (err) => {
+      setIsPayLoading(false);
+      toast.error(err.message || '创建订单失败');
+    },
+  });
+
+  const handlePay = (method: 'wechat' | 'alipay') => {
+    if (!isAuthenticated) {
+      window.location.href = getLoginUrl();
+      return;
+    }
+    setIsPayLoading(true);
+    createOrderMutation.mutate({
+      productKey: 'marriage',
+      inputData: JSON.stringify({}),
+      paymentMethod: method,
+    });
+  };
+
+  const handleUnlock = () => {
+    const el = document.getElementById('payment-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
 
   const coreModules = [
     {
@@ -190,7 +228,7 @@ export default function Home() {
 
       {/* 价格区域 */}
       <div className="px-4 py-6 max-w-md mx-auto">
-        <div className="rounded-3xl overflow-hidden border border-pink-400/30" style={{ background: 'linear-gradient(135deg, rgba(212,104,142,0.15), rgba(139,34,82,0.1))' }}>
+        <div id="payment-section" className="rounded-3xl overflow-hidden border border-pink-400/30" style={{ background: 'linear-gradient(135deg, rgba(212,104,142,0.15), rgba(139,34,82,0.1))' }}>
           <div className="px-6 py-6">
             {/* 价格展示 */}
             <div className="text-center mb-5">
@@ -214,21 +252,33 @@ export default function Home() {
             {/* 支付按钮 */}
             <div className="space-y-3">
               <button
-                onClick={handleUnlock}
-                className="w-full py-4 rounded-2xl font-bold text-white text-base transition-all duration-200 active:scale-95 flex items-center justify-center gap-3"
+                onClick={() => handlePay('wechat')}
+                disabled={isPayLoading}
+                className="w-full py-4 rounded-2xl font-bold text-white text-base transition-all duration-200 active:scale-95 flex items-center justify-center gap-3 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #07c160, #06ad56)', boxShadow: '0 6px 20px rgba(7,193,96,0.4)' }}
               >
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 8.056 4.229.884 0 1.754-.122 2.59-.368a.79.79 0 01.654.089l1.735 1.015a.297.297 0 00.152.05.267.267 0 00.265-.268c0-.066-.027-.13-.044-.194l-.355-1.352a.54.54 0 01.194-.607c1.67-1.23 2.696-3.048 2.696-5.04C24 8.708 21.133 5.91 16.938 8.858z"/>
-                </svg>
-                微信支付
+                {isPayLoading ? (
+                  <><Loader2 size={20} className="animate-spin" /> 处理中...</>
+                ) : (
+                  <>
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 8.056 4.229.884 0 1.754-.122 2.59-.368a.79.79 0 01.654.089l1.735 1.015a.297.297 0 00.152.05.267.267 0 00.265-.268c0-.066-.027-.13-.044-.194l-.355-1.352a.54.54 0 01.194-.607c1.67-1.23 2.696-3.048 2.696-5.04C24 8.708 21.133 5.91 16.938 8.858z"/>
+                    </svg>
+                    微信支付
+                  </>
+                )}
               </button>
               <button
-                onClick={handleUnlock}
-                className="w-full py-4 rounded-2xl font-bold text-white text-base transition-all duration-200 active:scale-95 flex items-center justify-center gap-3"
+                onClick={() => handlePay('alipay')}
+                disabled={isPayLoading}
+                className="w-full py-4 rounded-2xl font-bold text-white text-base transition-all duration-200 active:scale-95 flex items-center justify-center gap-3 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #1677ff, #0958d9)', boxShadow: '0 6px 20px rgba(22,119,255,0.4)' }}
               >
-                支付宝支付
+                {isPayLoading ? (
+                  <><Loader2 size={20} className="animate-spin" /> 处理中...</>
+                ) : (
+                  <>支付宝支付</>
+                )}
               </button>
             </div>
 
